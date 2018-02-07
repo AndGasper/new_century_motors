@@ -1,0 +1,16 @@
+select {
+    display: block;
+  }
+  
+  .submissionFieldset > * {
+    display: block;
+  }
+
+  .dealershipSubmissions {
+    border: solid black 2px;
+  }
+  
+  .submissionTitle {
+    font-size: 1.5em;
+    text-decoration: underline;
+  }
