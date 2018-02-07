@@ -6,11 +6,22 @@ select {
     display: block;
   }
 
-  .dealershipSubmissions {
+  .dealershipSubmissions, .submission, .comments, .replies {
     border: solid black 2px;
+    margin-bottom: 1em;
   }
   
-  .submissionTitle {
+  .submissionTitle, .repliesHeader {
     font-size: 1.5em;
+    text-decoration: underline;
+  }
+  
+  .reply {
+   border-top: solid grey 1px; 
+   border-bottom: solid grey 1px;
+  }
+
+  .replyLink {
+    color: blue; 
     text-decoration: underline;
   }
