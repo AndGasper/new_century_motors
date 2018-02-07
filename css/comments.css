@@ -1,27 +1,35 @@
 select {
-    display: block;
-  }
-  
-  .submissionFieldset > * {
-    display: block;
-  }
+  display: block;
+}
 
-  .dealershipSubmissions, .submission, .comments, .replies {
-    border: solid black 2px;
-    margin-bottom: 1em;
-  }
-  
-  .submissionTitle, .repliesHeader {
-    font-size: 1.5em;
-    text-decoration: underline;
-  }
-  
-  .reply {
-   border-top: solid grey 1px; 
-   border-bottom: solid grey 1px;
-  }
+.submissionFieldset > * {
+  display: block;
+}
 
-  .replyLink {
-    color: blue; 
-    text-decoration: underline;
-  }
+.dealershipSubmissions, .submission, .comments, .replies {
+  border: solid black 2px;
+  margin-bottom: 1em;
+}
+
+.submissionTitle, .repliesHeader {
+  font-size: 1.5em;
+  text-decoration: underline;
+}
+
+.reply {
+ border-top: solid grey 1px; 
+ border-bottom: solid grey 1px;
+}
+
+.replyLink {
+  color: blue; 
+  text-decoration: underline;
+}
+
+input {
+display: block;
+}
+
+form, button {
+margin: 0.50em;
+}

@@ -5,16 +5,17 @@
                 <link rel="stylesheet" href="/css/comments.css" type="text/css">
             </head>
     <body>
-        <p>Admin view: Pop out form for reply</p>
+        <p>Admin view: Login</p>
+      <h2>Login</h2>
         <form>
-        <fieldset class="submissionFieldset">
-            <label for="submissionTitle">Submission Title</label>
-            <input type="text" name="submissionTitle" />
+        <fieldset class="loginFieldset">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" />
             
-            <label for="submissionBody">Submission Body</label>
-            <textarea name="textarea" rows="10" cols="50"> </textarea>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" />
         </fieldset>
-        <button>Submit</button>
+        <button class="btn btn-success">Login</button>
                       
         </form>
     </body>
