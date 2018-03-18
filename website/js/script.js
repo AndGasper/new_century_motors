@@ -57,7 +57,7 @@ function addPost() {
         if (post.submissionTitle.length >= 2 && (post.submissionBody.length > 0)) {
             postsArray.push(post);
             clearAddPostForm($("#submissionTitle"), $("#submissionBody"));
-            writeDataToServer(post);
+            createPost(post);
         } else {
             if (post.submissionBody.length < 140) {
                 $("#submissionBody").addClass('has-warning');
@@ -392,6 +392,9 @@ function writeDataToServer(student) {
 }
 
 function createPost(post) {
+    let pendingAlert = $("<div class='alert alert-warning' style='text-align: center'>").append('<strong>Submitting post</strong>');
+    $("body").append(pendingAlert);
+    // submissionTitle, submissionBody, dealership, group
     $.ajax({
         method: 'POST',
         url: _config.api.invokeUrl + '/posts',
