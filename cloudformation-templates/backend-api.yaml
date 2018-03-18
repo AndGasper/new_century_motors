@@ -90,7 +90,7 @@
               Principal: 
                 Service: 
                   - lambda.amazonaws.com
-                Action: 
+              Action: 
                   - "sts:AssumeRole"
         Path: "/posts/"
         ManagedPolicyArns:
