@@ -1,13 +1,14 @@
+# The aws-cli only takes 
 ---
 AWSTemplateFormatVersion: "2010-09-09"
 
 Description:
-  Creates a static website using S3 for the Wild Rydes serverless web application workshop
+  Creates a static website using S3 for serverless web application
 
 Parameters:
   BucketName:
     Type: String
-    Description: The name for the bucket hosting your website, e.g. 'wildrydes-yourname'
+    Description: The name for the bucket hosting your website, e.g. 'sitename-environment'
 
   CodeBucket:
     Type: String
