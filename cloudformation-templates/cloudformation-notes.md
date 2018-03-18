@@ -1,5 +1,4 @@
 # [CloudFormation Templates as a URL](https://aws.amazon.com/blogs/devops/construct-your-own-launch-stack-url/)
-
 1. Configure a S3 Bucket for static website hosting.
 2. Place CloudFormation YAML/JSON files into S3 bucket
 3. Using the AWS Console, navigate to the CloudFormation resource section.
@@ -15,3 +14,6 @@
     - Create stack (cloud icon with an up arrow)
     - Enter the friendly name of the bucket 
     - Acknowledge the IAM role may be created.
+
+# `backend-api.yaml` 
+- Related file: clientSidePost.json => Mock data structure for client-side submission by an employee

@@ -1,0 +1,10 @@
+{
+    "message": {
+        "title": "Post title",
+        "body": "Post body"
+    },
+
+    "metaData": {
+        "dealerShip": "Dealership A"
+    }
+}
