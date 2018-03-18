@@ -97,7 +97,7 @@
           - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         Policies: 
           - 
-            PolicyName: PutPostPolicy
+            PolicyName: GetPostPolicy
             PolicyDocument: 
               Version: 2012-10-17
               Statement: 
@@ -120,7 +120,13 @@
         Code:
           ZipFile: > 
             const AWS = require('aws-sdk');
-            const TableName: ''
+            
+            exports.handler = (event, context, callback) => {
+              if (!event.requestContext.authorizer) {
+                errorResponse
+              }
+            }
+            
 
 
     
