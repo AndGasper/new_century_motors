@@ -136,14 +136,14 @@
                 // In order to extract meaningful values, we need to first parse this string
                 // into an object. A more robust implementation might inspect the Content-Type
                 // header first and use a different parsing strategy based on that value.
-                
+
                 const requestBody = JSON.parse(event.body);
   
                 const pickupLocation = requestBody.PickupLocation;
   
                 const unicorn = findUnicorn(pickupLocation);
   
-                recordRide(rideId, username, unicorn).then(() => {
+                recordRide(postId, username, unicorn).then(() => {
                     // You can use the callback function to provide a return value from your Node.js
                     // Lambda functions. The first parameter is used for failed invocations. The
                     // second parameter specifies the result data of the invocation.
@@ -153,11 +153,9 @@
                     callback(null, {
                         statusCode: 201,
                         body: JSON.stringify({
-                            RideId: rideId,
-                            Unicorn: unicorn,
-                            UnicornName: unicorn.Name,
-                            Eta: '30 seconds',
-                            Rider: username,
+                            PostId: postId,
+                            Post: unicorn,
+                            
                         }),
                         headers: {
                             'Access-Control-Allow-Origin': '*',
@@ -174,23 +172,14 @@
                 });
             };
   
-            // This is where you would implement logic to find the optimal unicorn for
-            // this ride (possibly invoking another Lambda function as a microservice.)
-            // For simplicity, we'll just pick a unicorn at random.
-  
-            function findUnicorn(pickupLocation) {
-                console.log('Finding unicorn for ', pickupLocation.Latitude, ', ', pickupLocation.Longitude);
-                return fleet[Math.floor(Math.random() * fleet.length)];
-            }
-  
-            function recordRide(rideId, username, unicorn) {
+            function recordPost(postId, post, unicorn) {
                 return ddb.put({
-                    TableName: 'Rides',
+                    TableName: 'Posts',
                     Item: {
-                        RideId: rideId,
-                        User: username,
+                        PostId: postId,
+                        Posr: username,
                         Unicorn: unicorn,
-                        RequestTime: new Date().toISOString(),
+                        PostTime: new Date().toISOString(),
                     },
                 }).promise();
             }

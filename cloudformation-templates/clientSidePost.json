@@ -5,6 +5,7 @@
     },
 
     "metaData": {
-        "dealerShip": "Dealership A"
+        "dealership": "Dealership A",
+        "group": "Group 1"
     }
 }

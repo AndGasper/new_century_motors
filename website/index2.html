@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1, user-scalable=no">
+    <title>Connect 2 Management</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/index.css" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+</head>
+<body>
+        <nav class="site-nav">
+                <ul>
+                  <li><a href="index.html">Home</a></li>
+                  <li><a href="login.html">Login</a></li>
+                </ul>
+              </nav>
+<div class = "container-fluid">
+    <div class = "row">
+<!-- only show this element when the isnt on mobile -->
+        <h1 class = "col-xs-12 col-md-10 col-lg-3">Connect 2 Management</h1>
+<!-- only show this element when the user gets to a mobile version -->
+        <h3 class = "hidden-xs-up hidden-lg-down col-xs-12 col-md-10">Connect 2 Management</h3>
+        <button type="button" class="btn btn-info" onclick="getDataFromServer()">Get Data From Server</button>
+    </div>
+
+<div class="post-add-form col-xs-8 col-md-3">
+    <h4>Submit your comment for management here</h4>
+    <form id="#addPostForm">
+        <fieldset>
+          <label for="dealershipDropDown">Select your dealership</label>
+          <select value="Please select your dealership" name="dealershipDropDown" id="dealershipDropDown">
+            <option>Dealership 1</option>
+            <option>Dealership 2</option>
+          </select>
+        <label for="groupDropDown">Select your group</label>
+        <select value="Please select your group" name="groupDropDown" id="groupDropDown">
+          <option>Group 1</option>
+          <option>Group 2</option>
+        </select>
+        </fieldset>
+        
+        <fieldset class="submissionFieldset">
+            <div id="submissionTitleDiv">
+                    <label for="submissionTitle">Submission Title</label>
+                    <input type="text" class="form-control" name="submissionTitle" id="submissionTitle">
+            </div>
+            <div id="submissionBodyDiv">
+                    <label for="submissionBody">Submission Body</label>
+                    <textarea name="submissionBody" rows="10" cols="50" id="submissionBody"> </textarea>
+            </div>          
+        </fieldset>
+        <div class="addPostButtons">
+            <button class="btn btn-success" onclick="addClicked()">Submit</button>
+            <button type="button" class="btn btn-default" onclick="cancelClicked()">Cancel</button>
+        </div>
+      </form>
+
+</div>
+    <div class="posts-list-container col-xs-6 col-md-8">
+        <table class="posts-list table ">
+            <td><h4>Group</h4><span id="group"></span></td>
+            <td><h4>Dealership</h4><span id="dealership"></span></td>
+            <thead>
+                <tr>
+                    <th>Post title</th>
+                    <th>Post body</th>
+                    <th>Group</th>
+                    <th>Dealership</th>
+                </tr>
+            </thead>
+            <tbody class="postsListTable">
+            </tbody>
+        </table>
+    </div>
+</div>
+<footer class="site-footer">
+        <div class="row column">
+          <nav class="footer-nav">
+          </nav>
+        </div>
+    
+        <div class="row column">
+          Work in progress
+          <div class="footer-legal">
+            &copy;Andres Gasper<br>
+            All Rights Reserved
+          </div>
+        </div>
+      </footer>
+      <script src="js/vendor.js"></script>
+</body>
+</html>
