@@ -94,24 +94,6 @@
             const AWS = require('aws-sdk');
   
             const ddb = new AWS.DynamoDB.DocumentClient();
-  
-            const fleet = [
-                {
-                    Name: 'Bucephalus',
-                    Color: 'Golden',
-                    Gender: 'Male',
-                },
-                {
-                    Name: 'Shadowfax',
-                    Color: 'White',
-                    Gender: 'Male',
-                },
-                {
-                    Name: 'Rocinante',
-                    Color: 'Yellow',
-                    Gender: 'Female',
-                },
-            ];
 
             const message = {
               title: "Post title",
@@ -209,19 +191,19 @@
               });
             }
   
-    WildRydesApi:
+    MessageBoardApi:
       Type: AWS::ApiGateway::RestApi
       Properties:
-        Name: WildRydes
+        Name: MessageBoardApi
         Body:
           swagger: 2.0
           info:
             version: 1.0.0
-            title: WildRydes
+            title: MessageBoardApi
           paths:
-            /ride:
-              post:
-                description: Requests a new ride
+            /posts:
+              get:
+                description: Get all posts
                 consumes:
                   - application/json
                 produces:
@@ -230,7 +212,65 @@
                   - CognitoAuthorizer: []
                 responses:
                   "200":
-                    description: "200 response"
+                    description: "all posts returned"
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: "string"
+                  x-amazon-apigateway-integration:
+                    responses:
+                      default:
+                        statusCode: 200
+                        responseParameters:
+                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                  uri: 
+                    Fn::Join:
+                      - ""
+                      - - "arn:aws:apigateway:"
+                        - !Ref AWS::Region
+                        - ":lambda:path/2015-03-31/functions/"
+                        - !GetAtt GetPostFunction.Arn
+                        - "/invocations"
+                    passthroughBehavior: "when_no_match"
+                    httpMethod: "GET"
+                    contentHandling: "CONVERT_TO_TEXT"
+                    type: "aws_proxy"
+                options:
+                  responses:
+                    "200":
+                      description: "200 response"
+                      schema:
+                        $ref: "#/definitions/Empty"
+                      headers:
+                        Access-Control-Allow-Origin:
+                          type: "string"
+                        Access-Control-Allow-Methods:
+                          type: "string"
+                        Access-Control-Allow-Headers:
+                          type: "string"
+                  x-amazon-apigateway-integration:
+                    responses:
+                      default:
+                        statusCode: "200"
+                        responseParameters:
+                          method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+                          method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                    requestTemplates:
+                      application/json: "{\"statusCode\": 200}"
+                    passthroughBehavior: "when_no_match"
+                    type: "mock"
+
+              post:
+                description: Create a new post
+                consumes:
+                  - application/json
+                produces:
+                  - application/json
+                security:
+                  - CognitoAuthorizer: []
+                responses:
+                  "200":
+                    description: "post created successfully"
                     headers:
                       Access-Control-Allow-Origin:
                         type: "string"
@@ -240,13 +280,13 @@
                       statusCode: 200
                       responseParameters:
                         method.response.header.Access-Control-Allow-Origin: "'*'"
-                  uri: 
-                    Fn::Join:
+                uri: 
+                  Fn::Join:
                       - ""
                       - - "arn:aws:apigateway:"
                         - !Ref AWS::Region
                         - ":lambda:path/2015-03-31/functions/"
-                        - !GetAtt RequestUnicornFunction.Arn
+                        - !GetAtt CreatePostFunction.Arn
                         - "/invocations"
                   passthroughBehavior: "when_no_match"
                   httpMethod: "POST"
@@ -289,18 +329,18 @@
                 type: "cognito_user_pools"
   
   
-    WildRydesApiDeployment:
+    MessageBoardApiDeployment:
       Type: AWS::ApiGateway::Deployment
       Properties:
         Description: Prod deployment for wild Rydes API
-        RestApiId: !Ref WildRydesApi
+        RestApiId: !Ref MessageBoardApi
         StageName: prod         
   
-    WildRydesFunctionPermissions:
+    MessageBoardFunctionPermissions:
       Type: AWS::Lambda::Permission
       Properties:
         Action: lambda:InvokeFunction
-        FunctionName: !Ref RequestUnicornFunction
+        FunctionName: !Ref CreatePostFunction
         Principal: apigateway.amazonaws.com
         SourceArn:
           Fn::Join:
@@ -310,7 +350,7 @@
               - ":"
               - !Ref AWS::AccountId
               - ":"
-              - !Ref WildRydesApi
+              - !Ref MessageBoardApi
               - "/*"
   
     UpdateConfig:
@@ -322,7 +362,7 @@
           Fn::Join:
             - ""
             - - "https://"
-              - !Ref WildRydesApi
+              - !Ref MessageBoardApi
               - ".execute-api."
               - !Ref AWS::Region
               - ".amazonaws.com/prod"
@@ -330,7 +370,7 @@
     UpdateConfigRole:
       Type: AWS::IAM::Role
       Properties:
-        Path: /wildrydes/
+        Path: /messageboard/
         AssumeRolePolicyDocument:
           Version: 2012-10-17
           Statement:
@@ -410,15 +450,15 @@
               finally:
                 cfnresponse.send(event, context, status, {}, new_physical_id)
   Outputs:
-    WildRydesApiInvokeUrl:
-      Description: URL for the deployed wild rydes API
+    MessageBoardApiInvokeUrl:
+      Description: URL for the deployed message board API
       Value:
         Fn::Join:
           - ""
           - - "https://"
-            - !Ref WildRydesApi
+            - !Ref MessageBoardApi
             - ".execute-api."
             - !Ref AWS::Region
             - ".amazonaws.com/prod"
       Export:
-        Name: WildRydesApiUrl
+        Name: MessageBoardApiUrl
