@@ -418,11 +418,9 @@ function createPost(post) {
         method: 'POST',
         url: _config.api.invokeUrl + '/posts',
         headers: {
-            Authorization: authToken
+            Authorization: authToken,
         },
-        data: JSON.stringify({
-            submissionData: post
-        }),
+        data: JSON.stringify(post),
         contentType: 'application/json',
         success: completeRequest,
         error: function ajaxError(jqXHR, textStatus, errorThrown) {

@@ -1,5 +1,7 @@
 const randomBytes = require('crypto').randomBytes;
+  
 const AWS = require('aws-sdk');
+  
 const ddb = new AWS.DynamoDB.DocumentClient();
   
 exports.handler = (event, context, callback) => {
@@ -7,7 +9,8 @@ exports.handler = (event, context, callback) => {
     //     errorResponse('Authorization not configured', context.awsRequestId, callback);
     //     return;
     // }
-  
+    
+    console.log('event', event);
     // Because we're using a Cognito User Pools authorizer, all of the claims
     // included in the authentication token are provided in the request context.
     // This includes the username as well as other attributes.
@@ -19,7 +22,7 @@ exports.handler = (event, context, callback) => {
     // header first and use a different parsing strategy based on that value.
 
     const requestBody = JSON.parse(event.body);
-    const timeStamp = new Date().toISOString()
+    const timeStamp = new Date().toISOString();
   
     const message = {
       title: requestBody.submissionTitle,
@@ -49,10 +52,11 @@ exports.handler = (event, context, callback) => {
     // Check for empty fields
     function validateMessage(message) {
         var keys = Object.keys(message);
+        var errors = [];
         // Check for empty values
-        for (i = 0; i < keys.length; i++) {
-            if (message[key] === '') {
-                errors.push(key);
+        for (var i = 0; i < keys.length; i++) {
+            if (message[i] === '') {
+                errors.push(i);
             }
         }
         return errors;
@@ -63,8 +67,8 @@ exports.handler = (event, context, callback) => {
     function createUniquePostIdFromMessage(message, timeStamp) {
         var postId = message.title + message.dealership + message.group + timeStamp;
         var timeStampArray = [];
-        for (i = 0; i < timeStamp.length; i++) {
-            if (parseInt(timeStamp[i])) {
+        for (var i = 0; i < timeStamp.length; i++) {
+            if (parseInt(timeStamp[i], 10)) {
                 timeStampArray.push(timeStamp[i]);
             }
         }
@@ -75,8 +79,8 @@ exports.handler = (event, context, callback) => {
     }
     if (validateMessage(message).length === 0) {
         console.log('validate message 0 errors');
-        postId = createUniquePostIdFromMessage(message, timeStamp); // Update postId
-        responseBody.message.PostId = postId; 
+        var postId = createUniquePostIdFromMessage(message, timeStamp); // Update postId
+        responseBody.message.PostId = postId;
         recordPost(postId, message).then(() => {
             // You can use the callback function to provide a return value from your Node.js
             // Lambda functions. The first parameter is used for failed invocations. The
@@ -94,7 +98,7 @@ exports.handler = (event, context, callback) => {
                 // more meaningful error response to the end client.
                 errorResponse(err.message, context.awsRequestId, callback);
             });
-        };
+        }
   
         function recordPost(postId, post, timeStamp) {
             return ddb.put({
@@ -129,5 +133,5 @@ exports.handler = (event, context, callback) => {
             },
           });
         }
-    }
+    };
     
