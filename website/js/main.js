@@ -8,7 +8,7 @@ var MessageBoardApi = window.MessageBoardApi || {};
             authToken = token;
         } else {
             // Get token for anonymous user
-            window.location.href = '/index.html';
+            window.location.href = '/register.html';
         }
     }).catch(function handleTokenError(error) {
     alert(error);
@@ -32,7 +32,8 @@ let group = $("#groupDropDown :selected").text();
 /**
  * addClicked = Event Handler when user clicks the add button, should a
  */
-function addClicked() {
+function addClicked(event) {
+    event.preventDefault();
     addPost();
 };
 /**
@@ -84,7 +85,7 @@ function addPost() {
 /**
  * @name - clearAddPostForm - clears out the form values based on inputIds variable
  */
-function clearAddPostForm(postTitle, courseName) {
+function clearAddPostForm(postTitle, postBody) {
     $(postTitle).val("");
     $(postBody).val("");
 
