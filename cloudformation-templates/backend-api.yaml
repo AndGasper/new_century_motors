@@ -116,7 +116,7 @@
         Role: !GetAtt GetPostExecutionRole.Arn
         Timeout: 5
         MemorySize: 128
-        Handler: index.handler
+        Handler: getPost.handler
         Code:
           S3Bucket: "messageboard-lambda-functions"
           S3Key: "getPost.zip"
@@ -166,7 +166,7 @@
                   x-amazon-apigateway-integration:
                     responses:
                       default:
-                        statusCode: 200
+                        statusCode: "200"
                         responseParameters:
                           method.response.header.Access-Control-Allow-Origin: "'*'"
                   uri: 
@@ -224,7 +224,7 @@
                 x-amazon-apigateway-integration:
                   responses:
                     default:
-                      statusCode: 200
+                      statusCode: "200"
                       responseParameters:
                         method.response.header.Access-Control-Allow-Origin: "'*'"
                 uri: 
@@ -279,7 +279,7 @@
     MessageBoardApiDeployment:
       Type: AWS::ApiGateway::Deployment
       Properties:
-        Description: Prod deployment for wild Rydes API
+        Description: Prod deployment for Message Board API
         RestApiId: !Ref MessageBoardApi
         StageName: prod         
   
