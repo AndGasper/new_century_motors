@@ -297,38 +297,38 @@
                   httpMethod: "GET"
                   contentHandling: "CONVERT_TO_TEXT"
                   type: "aws_proxy"
-              # post:
-              #   description: Create a new post
-              #   consumes:
-              #     - application/json
-              #   produces:
-              #     - application/json
-              #   security:
-              #     - CognitoAuthorizer: []
-              #   responses:
-              #     "200":
-              #       description: "post created successfully"
-              #       headers:
-              #         Access-Control-Allow-Origin:
-              #           type: "string"
-              #   x-amazon-apigateway-integration:
-              #     responses:
-              #       default:
-              #         statusCode: "200"
-              #         responseParameters:
-              #           method.response.header.Access-Control-Allow-Origin: "'*'"
-              #     uri: 
-              #       Fn::Join:
-              #           - ""
-              #           - - "arn:aws:apigateway:"
-              #             - !Ref AWS::Region
-              #             - ":lambda:path/2015-03-31/functions/"
-              #             - !GetAtt CreatePostFunction.Arn
-              #             - "/invocations"
-              #       passthroughBehavior: "when_no_match"
-              #       httpMethod: "POST"
-              #       contentHandling: "CONVERT_TO_TEXT"
-              #       type: "aws_proxy"
+              post:
+                description: Create a new post
+                consumes:
+                  - application/json
+                produces:
+                  - application/json
+                security:
+                  - CognitoAuthorizer: []
+                responses:
+                  "200":
+                    description: "post created successfully"
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: "string"
+                x-amazon-apigateway-integration:
+                  responses:
+                    default:
+                      statusCode: "200"
+                      responseParameters:
+                        method.response.header.Access-Control-Allow-Origin: "'*'"
+                  uri: 
+                    Fn::Join:
+                        - ""
+                        - - "arn:aws:apigateway:"
+                          - !Ref AWS::Region
+                          - ":lambda:path/2015-03-31/functions/"
+                          - !GetAtt CreatePostFunction.Arn
+                          - "/invocations"
+                  passthroughBehavior: "when_no_match"
+                  httpMethod: "POST"
+                  contentHandling: "CONVERT_TO_TEXT"
+                  type: "aws_proxy"
               options:
                 responses:
                   "200":
