@@ -1,3 +1,17 @@
+/*global MessageBoardApi _config*/
+var MessageBoardApi = window.MessageBoardApi || {};
+
+(function postWrapper($) {
+    var authToken;
+    MessageBoardApi.authToken.then(function setAuthToken(token) {
+        if (token) {
+            authToken = token;
+        } else {
+            window.location.href = '/login.html';
+        }
+    }).catch(function handleTokenError(error) {
+    alert(error);
+    });
 /**
  * student_array - global array to hold student objects
  * @type {Array}
@@ -36,8 +50,8 @@ function addPost() {
     let post = {
         submissionTitle: $("#submissionTitle").val(),
         submissionBody: $("#submissionBody").val(),
-        dealership = $("#dealershipDropDown :selected").text(),
-        group = $("#groupDropDown :selected").text(),
+        dealership: $("#dealershipDropDown :selected").text(),
+        group: $("#groupDropDown :selected").text(),
     };
 
     let titleFeedback = $("<div class='titleFeedback'>").addClass("form-control-feedback").text("Post titles must be at least two (2) characters long");
@@ -352,7 +366,7 @@ function getDataFromServer() {
 
     // ajax call with data, dataType, method, url, and success function
     $.ajax({
-        url: "data.php?action=readAll",
+        url: "",
         dataType: "json",
         method: "GET",
         success: function (response) {
@@ -554,15 +568,6 @@ function gradeValidation() {
     }
 }
 
-
-
-
-$(document).ready(function(){
-    $("#studentName").on("change", nameValidation);
-    $("#course").on("change", courseNameValidation);
-    $("#studentGrade").on("change",gradeValidation);
-    getDataFromServer(); // Get data from server as soon as page loads
-    // Modal input event handlers are added inline
-});
+}(jQuery));
 
 
