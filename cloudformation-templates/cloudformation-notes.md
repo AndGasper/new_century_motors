@@ -18,8 +18,11 @@
 # `backend-api.yaml` 
 - Related file: clientSidePost.json => Mock data structure for client-side submission by an employee
 
+# `user-management.yaml`
+- Creates the Cognito Pool. (Assumes one already has a S3 Bucket for the site configured.)
+
 # `CreatePostFunction`
-There's an upper limit to what the raw cloudformation template will accept for lambnda function length 
+There's an upper limit to what the raw cloudformation template will accept for lambnda function length, so the Lambda functions have been moved to zip files inside of a S3 bucket
 
 
 
