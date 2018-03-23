@@ -25,3 +25,21 @@ There's an upper limit to what the raw cloudformation template will accept for l
 
 # No integration method
 - When the `z-amazon-apigateway-integration` is malformed, `No integration method` is thrown for the `MessageBoardApiDeploy`
+
+
+# A word on Lambda functions
+- Notice that the `Handler` attribute matches the zip file name
+- ``` 
+    GetPostFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        FunctionName: GetPost
+        Runtime: nodejs6.10
+        Role: !GetAtt GetPostExecutionRole.Arn
+        Timeout: 5
+        MemorySize: 128
+        Handler: getPost.handler
+        Code:
+          S3Bucket: "messageboard-lambda-functions"
+          S3Key: "getPost.zip"
+    ```
