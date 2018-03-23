@@ -390,7 +390,10 @@ function writeDataToServer(student) {
         }
     });
 }
-
+/**
+ * @name createPost
+ * @param {} post 
+ */
 function createPost(post) {
     let pendingAlert = $("<div class='alert alert-warning' style='text-align: center'>").append('<strong>Submitting post</strong>');
     $("body").append(pendingAlert);

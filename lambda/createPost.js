@@ -1,20 +1,17 @@
 const randomBytes = require('crypto').randomBytes;
-  
 const AWS = require('aws-sdk');
-  
 const ddb = new AWS.DynamoDB.DocumentClient();
   
 exports.handler = (event, context, callback) => {
-    if (!event.requestContext.authorizer) {
-        errorResponse('Authorization not configured', context.awsRequestId, callback);
-        return;
-    }
-    console.log('Received event (', postId, '): ', event);
+    // if (!event.requestContext.authorizer) {
+    //     errorResponse('Authorization not configured', context.awsRequestId, callback);
+    //     return;
+    // }
   
     // Because we're using a Cognito User Pools authorizer, all of the claims
     // included in the authentication token are provided in the request context.
     // This includes the username as well as other attributes.
-    const username = event.requestContext.authorizer.claims['cognito:username'];
+    // const username = event.requestContext.authorizer.claims['cognito:username'];
   
     // The body field of the event in a proxy integration is a raw string.
     // In order to extract meaningful values, we need to first parse this string
@@ -29,6 +26,24 @@ exports.handler = (event, context, callback) => {
       body: requestBody.submissionBody,
       dealership: requestBody.dealership,
       group: requestBody.group
+    };
+
+    // Parrot the message back
+    // Start with a default PostId of 0
+    var responseBody = {
+        "message": {
+            "PostId": 0,
+            "Post": message,
+        }
+    };
+    
+    var successResponse = {
+        "statusCode": 201,
+        "headers": {
+            "Access-Control-Allow-Origin": "*"
+        },
+        'body': JSON.stringify(responseBody),
+        "isBase64Encoded": false
     };
     
     // Check for empty fields
@@ -59,6 +74,9 @@ exports.handler = (event, context, callback) => {
         return postId;
     }
     if (validateMessage(message).length === 0) {
+        console.log('validate message 0 errors');
+        postId = createUniquePostIdFromMessage(message, timeStamp); // Update postId
+        responseBody.message.PostId = postId; 
         recordPost(postId, message).then(() => {
             // You can use the callback function to provide a return value from your Node.js
             // Lambda functions. The first parameter is used for failed invocations. The
@@ -66,16 +84,7 @@ exports.handler = (event, context, callback) => {
   
             // Because this Lambda function is called by an API Gateway proxy integration
             // the result object must use the following structure.
-            callback(null, {
-                statusCode: 201,
-                body: JSON.stringify({
-                    PostId: postId,
-                    Post: message,
-                }),
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                },
-            });
+            callback(null, successResponse);
         }).catch((err) => {
             console.error(err);
   

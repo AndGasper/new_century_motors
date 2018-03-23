@@ -1,0 +1,12 @@
+{
+    "requestContext": {
+        "authorizer": "abc"
+    }   
+}
+// Test body
+{
+    "submissionTitle": "Test Title",
+    "submissionBody": "Test Body",
+    "dealership": "Dealership 1",
+    "group": "Group A"
+}
