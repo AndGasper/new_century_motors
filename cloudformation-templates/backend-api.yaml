@@ -250,14 +250,14 @@
                 type: "cognito_user_pools"
   
   
-    MessageBoardApiDeployment:
+  MessageBoardApiDeployment:
       Type: AWS::ApiGateway::Deployment
       Properties:
         Description: Prod deployment for Message Board API
         RestApiId: !Ref MessageBoardApi
-        StageName: prod         
-  
-    MessageBoardFunctionPermissions:
+        StageName: prod
+        
+  MessageBoardFunctionPermissions:
       Type: AWS::Lambda::Permission
       Properties:
         Action: lambda:InvokeFunction
@@ -273,8 +273,9 @@
               - ":"
               - !Ref MessageBoardApi
               - "/*"
-  
-    UpdateConfig:
+              
+              
+  UpdateConfig:
       Type: "Custom::ConfigFile"
       Properties:
         ServiceToken: !GetAtt UpdateConfigFunction.Arn
@@ -288,7 +289,7 @@
               - !Ref AWS::Region
               - ".amazonaws.com/prod"
         
-    UpdateConfigRole:
+  UpdateConfigRole:
       Type: AWS::IAM::Role
       Properties:
         Path: /messageboard/
@@ -319,7 +320,7 @@
                   Resource:
                     - !Sub "arn:aws:s3:::${WebsiteBucket}/*"
   
-    UpdateConfigFunction:
+  UpdateConfigFunction:
       Type: AWS::Lambda::Function
       Properties:
         Description: Adds the API endpoint to the config.js file
@@ -371,10 +372,10 @@
               finally:
                 cfnresponse.send(event, context, status, {}, new_physical_id)
   Outputs:
-    MessageBoardApiInvokeUrl:
-      Description: URL for the deployed message board API
-      Value:
-        Fn::Join:
+  MessageBoardApiInvokeUrl:
+    Description: URL for the deployed message board API
+    Value:
+      Fn::Join:
           - ""
           - - "https://"
             - !Ref MessageBoardApi
