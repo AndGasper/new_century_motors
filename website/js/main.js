@@ -368,18 +368,18 @@ function getDataFromServer() {
 
     // ajax call with data, dataType, method, url, and success function
     $.ajax({
-        url: "",
+        url: _config.api.invokeUrl + '/posts',
         dataType: "json",
         method: "GET",
-        success: function (response) {
-            $('.alert').remove(); // Remove the alert regardless of success or failure
-            (response.success) ? (updateData(response.data)) : (serverErrorModal(response.errors)); // response.data is an array of objects)
-
-
+        headers: {
+            Authorization: authToken,
         },
-        error: (response) => {
-            $('.alert').remove(); // Remove the alert regardless of success or failure
-            serverErrorModal(["uh oh"]); // In case of error, show a generic something was wrong modal
+        contentType: 'application/json',
+        success: completeRequest,
+        error: function ajaxError(jqXHR, textStatus, errorThrown) {
+            console.error('Error creating post: ', textStatus, ', Details: ', errorThrown);
+            console.error('Response: ', jqXHR.responseText);
+            alert('An error occurred when creating your post:\n' + jqXHR.responseText);
         }
     });
 }
@@ -432,8 +432,14 @@ function createPost(post) {
 }
 
 function completeRequest(result) {
-    var post;
     console.log('Response received from API: ', result);
+    $('.alert').remove(); // Remove the submitting alert.
+    if (result.success) {
+        updateData(result.data);
+    } else {
+        serverErrorModal(result.errors); // response.data is an array of objects)
+    }
+
 }
 
 function deleteDataFromServer(studentID) {
@@ -570,6 +576,7 @@ function gradeValidation() {
 
 $(document).ready(function(){
     $('#submitComment').click(addClicked);
+    $('#getDataFromServer').click(getDataFromServer);
 });
 
 }(jQuery));
