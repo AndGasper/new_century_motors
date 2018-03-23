@@ -115,14 +115,14 @@ var MessageBoardApi = window.MessageBoardApi || {};
      */
 
     $(function onDocReady() {
-        $('#signinForm').submit(handleSignin);
+        $('#loginForm').submit(handleSignin);
         $('#registrationForm').submit(handleRegister);
-        $('#verifyForm').submit(handleVerify);
+        // $('#verifyForm').submit(handleVerify);
     });
 
     function handleSignin(event) {
-        var email = $('#emailInputSignin').val();
-        var password = $('#passwordInputSignin').val();
+        var email = $('#username').val();
+        var password = $('#password').val();
         event.preventDefault();
         signin(email, password,
             function signinSuccess() {

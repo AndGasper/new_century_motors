@@ -8,7 +8,7 @@ var MessageBoardApi = window.MessageBoardApi || {};
             authToken = token;
         } else {
             // Get token for anonymous user
-            window.location.href = '/login.html';
+            window.location.href = '/index.html';
         }
     }).catch(function handleTokenError(error) {
     alert(error);
@@ -568,6 +568,10 @@ function gradeValidation() {
         $("#scoreDiv").addClass("has-success");
     }
 }
+
+$(document).ready(function(){
+    $('#submitComment').click(addClicked);
+});
 
 }(jQuery));
 

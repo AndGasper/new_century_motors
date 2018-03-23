@@ -5,17 +5,25 @@
                 <link rel="stylesheet" href="css/index.css" type="text/css">
             </head>
     <body>
-        <p>Admin view: Login</p>
-      <h2>Login</h2>
-        <form id="loginForm">
+        <p>Register - For testing</p>
+      <h2>Register</h2>
+        <form id="registrationForm">
         <fieldset class="loginFieldset">
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username" />
+            <label for="email">Email Address</label>
+            <input type="text" name="email" id="emailInputRegister" />
             
             <label for="password">Password</label>
-            <input type="password" name="password" id="password" />
+            <input type="password" name="password" id="passwordInputRegister" />
+
+            <label for="passwordConfirm">Confirm Password</label>
+            <input type="password" name="passwordConfirm" id="password2InputRegister" />
+            <section>
+                One capital letter, one special char (!, @), and one numeric value (0-9)
+            </section>
+
+
         </fieldset>
-        <button class="btn btn-success">Login</button>
+        <button class="btn btn-success">Register</button>
                       
         </form>
         <script src="js/vendor/jquery-3.1.0.js"></script>
