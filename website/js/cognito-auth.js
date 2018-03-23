@@ -44,6 +44,7 @@ var MessageBoardApi = window.MessageBoardApi || {};
                 }
             });
         } else {
+            // Create an anonymous user
             resolve(null);
         }
     });
@@ -126,7 +127,7 @@ var MessageBoardApi = window.MessageBoardApi || {};
         signin(email, password,
             function signinSuccess() {
                 console.log('Successfully Logged In');
-                window.location.href = 'ride.html';
+                window.location.href = 'index.html';
             },
             function signinError(err) {
                 alert(err);
@@ -144,7 +145,7 @@ var MessageBoardApi = window.MessageBoardApi || {};
             console.log('user name is ' + cognitoUser.getUsername());
             var confirmation = ('Registration successful. Please check your email inbox or spam folder for your verification code.');
             if (confirmation) {
-                window.location.href = 'verify.html';
+                window.location.href = 'index.html';
             }
         };
         var onFailure = function registerFailure(err) {

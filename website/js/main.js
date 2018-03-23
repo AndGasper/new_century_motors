@@ -7,6 +7,7 @@ var MessageBoardApi = window.MessageBoardApi || {};
         if (token) {
             authToken = token;
         } else {
+            // Get token for anonymous user
             window.location.href = '/login.html';
         }
     }).catch(function handleTokenError(error) {

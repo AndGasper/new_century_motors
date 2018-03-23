@@ -5,6 +5,9 @@ Description:
   Creates a Cognito User Pool for the site serverless web application
 
 Parameters:
+  UserPoolName:
+    Type: String
+    Description: The name for the application's Cognito User Pool
   WebsiteBucket:
     Type: String
     Description: The name for the bucket hosting the website'
@@ -16,8 +19,15 @@ Metadata:
         Label:
           default: "Module 1 Details"
         Parameters:
+          - UserPoolName
+      -
+        Label:
+          default: "Module 2 Details"
+        Parameters:
           - WebsiteBucket
     ParameterLabels:
+      UserPoolName:
+        default: "Cognito User Pool Name"
       WebsiteBucket:
         default: "Website Bucket Name"
 
@@ -26,7 +36,7 @@ Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: NewCenturyMotors
+      UserPoolName: !Ref UserPoolName
       AliasAttributes:
         - email
       AutoVerifiedAttributes:
@@ -35,10 +45,17 @@ Resources:
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
-      ClientName: NewCenturyMotorsWeb
+      ClientName: !Sub "${UserPoolName}Web"
       UserPoolId: !Ref UserPool
       GenerateSecret: false
 
+  AnonymousUserGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      Description: "User group for anonymous posting"
+      GroupName: "Anonymous"
+      UserPoolId: !Ref UserPool
+      
   UpdateConfig:
     Properties:
       ServiceToken: !GetAtt UpdateConfigFunction.Arn
