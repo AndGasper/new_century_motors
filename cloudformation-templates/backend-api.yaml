@@ -372,7 +372,7 @@
               finally:
                 cfnresponse.send(event, context, status, {}, new_physical_id)
   Outputs:
-  MessageBoardApiInvokeUrl:
+    MessageBoardApiInvokeUrl:
     Description: URL for the deployed message board API
     Value:
       Fn::Join:
