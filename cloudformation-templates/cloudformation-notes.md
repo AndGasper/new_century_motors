@@ -20,3 +20,8 @@
 
 # `CreatePostFunction`
 There's an upper limit to what the raw cloudformation template will accept for lambnda function length 
+
+
+
+# No integration method
+- When the `z-amazon-apigateway-integration` is malformed, `No integration method` is thrown for the `MessageBoardApiDeploy`
