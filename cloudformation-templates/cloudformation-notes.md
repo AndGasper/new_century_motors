@@ -17,3 +17,6 @@
 
 # `backend-api.yaml` 
 - Related file: clientSidePost.json => Mock data structure for client-side submission by an employee
+
+# `CreatePostFunction`
+There's an upper limit to what the raw cloudformation template will accept for lambnda function length 
