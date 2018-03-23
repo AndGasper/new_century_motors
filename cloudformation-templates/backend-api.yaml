@@ -149,6 +149,38 @@
             title: MessageBoardApi
           paths:
             /posts:
+              get: 
+                description: Get all posts
+                consumes:
+                  - application/json
+                produces:
+                  - application/json
+                security: 
+                  - CognitoAuthorizer: []
+                responses:
+                    "200":
+                      description: "all posts returned"
+                      headers:
+                        Access-Control-Allow-Headers:
+                          type: "string"
+                x-amazon-apigateway-integration:
+                    responses:
+                      default:
+                        statusCode: "200"
+                        responseParameters:
+                          method.response.header.Access-Control-Allow-Origin: "'*'"
+                uri: 
+                  Fn::Join:
+                      - ""
+                      - - "arn:aws:apigateway:"
+                        - !Ref AWS::Region
+                        - ":lambda:path/2015-03-31/functions/"
+                        - !GetAtt GetPostFunction.Arn
+                        - "/invocations"
+                  passthroughBehavior: "when_no_match"
+                  httpMethod: "POST"
+                  contentHandling: "CONVERT_TO_TEXT"
+                  type: "aws_proxy"
               post:
                 description: Create a new post
                 consumes:
