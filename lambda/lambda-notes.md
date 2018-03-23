@@ -9,3 +9,8 @@
 ## 3. Upload to `messageboard-lambda-functions`
 Drag+drop/upload through CLI zip file into
 `messageboard-lambda-functions`
+
+
+# `lambda/tests`
+## createPostTest.json
+- Event object 
