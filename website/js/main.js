@@ -377,9 +377,9 @@ function getDataFromServer() {
         contentType: 'application/json',
         success: completeRequest,
         error: function ajaxError(jqXHR, textStatus, errorThrown) {
-            console.error('Error creating post: ', textStatus, ', Details: ', errorThrown);
+            console.error('Error getting posts from server: ', textStatus, ', Details: ', errorThrown);
             console.error('Response: ', jqXHR.responseText);
-            alert('An error occurred when creating your post:\n' + jqXHR.responseText);
+            alert('An error occurred when contacting the server:\n' + jqXHR.responseText);
         }
     });
 }

@@ -108,6 +108,29 @@
                     - dynamodb:Scan
                   Resource: !GetAtt PostsTable.Arn
   
+    CloudWatchRole: 
+      Type: "AWS::IAM::Role"
+      Properties: 
+        RoleName: ApiGatewayLogsRole
+        AssumeRolePolicyDocument: 
+          Version: 2012-10-17
+          Statement: 
+            - 
+              Effect: Allow
+              Principal: 
+                Service: 
+                  - apigateway.amazonaws.com
+              Action: 
+                - "sts:AssumeRole"
+        Path: "/"
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+  
+    Account: 
+      Type: "AWS::ApiGateway::Account"
+      Properties: 
+        CloudWatchRoleArn: !GetAtt CloudWatchRole.Arn
+  
     UpdateConfigRole:
       Type: AWS::IAM::Role
       Properties:
@@ -411,7 +434,13 @@
               - ":"
               - !Ref MessageBoardApi
               - "/*"
-  
+
+    MessageBoardApiLogPermissions:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        LogGroupName: ApiGatewayLogs
+        RetentionInDays: 365
+
     UpdateApiConfig:
       Type: "Custom::ApiConfigFile"
       Properties:
@@ -494,3 +523,7 @@
             - ".amazonaws.com/prod"
       Export:
         Name: MessageBoardApiUrl
+        
+    CloudWatchLogGroupName:
+      Description: Name of cloud watch logs group
+      Value: !Ref MessageBoardApiLogPermissions
