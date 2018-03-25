@@ -229,7 +229,7 @@
       Properties:
         FunctionName: GetPosts
         Runtime: nodejs6.10
-        Role: !GetAtt GetPostExecutionRole.Arn
+        Role: !GetAtt GetPostsExecutionRole.Arn
         Timeout: 5
         MemorySize: 128
         Handler: getPosts.handler
