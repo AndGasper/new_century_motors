@@ -236,9 +236,6 @@
         Code:
           S3Bucket: "messageboard-lambda-functions"
           S3Key: "getPosts.zip"
-            
-
-
     
     CreatePostFunction:
       Type: AWS::Lambda::Function
@@ -396,7 +393,7 @@
               - !Ref AWS::AccountId
               - ":"
               - !Ref MessageBoardApi
-              - "/*"
+              - "/*/posts"
               
     MessageBoardApiGetFunctionPermissions:
       Type: AWS::Lambda::Permission
