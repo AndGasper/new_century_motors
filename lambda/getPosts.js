@@ -14,7 +14,7 @@ exports.handler = (event, context, callback) => {
   };
 
   var successResponse = {
-    "statusCode": 200,
+    "statusCode": 201,
     "headers": {
         "Access-Control-Allow-Origin": "*"
     },
@@ -28,7 +28,7 @@ function getPosts() {
       console.log('error', error);
       responseBody.data.push('Error');
     } else {
-      console.log('Query succeeded. results', results);
+      // console.log('Query succeeded. results', results);
       results.Items.forEach(function(item) {
         responseBody.data.push(item);
       });
@@ -50,11 +50,12 @@ function errorResponse(errorMessage, awsRequestId, callback) {
 }
 
 getPosts().then(() => {
-  console.log('getPosts then block');
-  console.log('successResponse', successResponse);
+  // console.log('getPosts then block');
   successResponse.body = JSON.stringify(successResponse.body);
+  console.log('successResponse', successResponse);
   callback(null,successResponse);
 }).catch((err) => {
+  console.log('catch error block');
   console.error(err);
   errorResponse(err.message, context.awsRequestId, callback);
 });

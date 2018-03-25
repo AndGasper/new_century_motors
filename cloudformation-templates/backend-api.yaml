@@ -77,11 +77,11 @@
                     - dynamodb:PutItem
                     - dynamodb:Scan
                   Resource: !GetAtt PostsTable.Arn
-    
-    GetPostExecutionRole:
+  
+    GetPostsExecutionRole:
       Type: AWS::IAM::Role
       Properties: 
-        RoleName: GetPostLambda
+        RoleName: GetPostsLambda
         AssumeRolePolicyDocument: 
           Version: 2012-10-17
           Statement: 
@@ -97,7 +97,7 @@
           - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         Policies: 
           - 
-            PolicyName: GetPostPolicy
+            PolicyName: GetPostsPolicy
             PolicyDocument: 
               Version: 2012-10-17
               Statement: 
@@ -107,7 +107,7 @@
                     - dynamodb:GetItem
                     - dynamodb:Scan
                   Resource: !GetAtt PostsTable.Arn
-
+  
     UpdateConfigRole:
       Type: AWS::IAM::Role
       Properties:
@@ -224,18 +224,18 @@
   
       Type: AWS::Lambda::Function
   
-    GetPostFunction:
+    GetPostsFunction:
       Type: AWS::Lambda::Function
       Properties:
-        FunctionName: GetPost
+        FunctionName: GetPosts
         Runtime: nodejs6.10
         Role: !GetAtt GetPostExecutionRole.Arn
         Timeout: 5
         MemorySize: 128
-        Handler: getPost.handler
+        Handler: getPosts.handler
         Code:
           S3Bucket: "messageboard-lambda-functions"
-          S3Key: "getPost.zip"
+          S3Key: "getPosts.zip"
             
 
 
@@ -291,10 +291,10 @@
                       - - "arn:aws:apigateway:"
                         - !Ref AWS::Region
                         - ":lambda:path/2015-03-31/functions/"
-                        - !GetAtt GetPostFunction.Arn
+                        - !GetAtt GetPostsFunction.Arn
                         - "/invocations"
                   passthroughBehavior: "when_no_match"
-                  httpMethod: "POST"
+                  httpMethod: "GET"
                   contentHandling: "CONVERT_TO_TEXT"
                   type: "aws_proxy"
               post:
@@ -397,11 +397,12 @@
               - ":"
               - !Ref MessageBoardApi
               - "/*"
+              
     MessageBoardApiGetFunctionPermissions:
       Type: AWS::Lambda::Permission
       Properties:
         Action: lambda:InvokeFunction
-        FunctionName: !Ref GetPostFunction
+        FunctionName: !Ref GetPostsFunction
         Principal: apigateway.amazonaws.com
         SourceArn:
           Fn::Join:

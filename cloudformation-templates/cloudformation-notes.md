@@ -33,10 +33,10 @@ There's an upper limit to what the raw cloudformation template will accept for l
 # A word on Lambda functions
 - Notice that the `Handler` attribute matches the zip file name
 - ``` 
-    GetPostFunction:
+    GetPostsFunction:
       Type: AWS::Lambda::Function
       Properties:
-        FunctionName: GetPost
+        FunctionName: GetPosts
         Runtime: nodejs6.10
         Role: !GetAtt GetPostExecutionRole.Arn
         Timeout: 5
@@ -44,5 +44,12 @@ There's an upper limit to what the raw cloudformation template will accept for l
         Handler: getPost.handler
         Code:
           S3Bucket: "messageboard-lambda-functions"
-          S3Key: "getPost.zip"
+          S3Key: "getPosts.zip"
     ```
+
+Debug log:
+- From the back-end the `GET` (verified through API Gateway and verified the `getPost` _Lambda_ function successfully executed and returned stored posts from the _DynamoDB_ `Posts` Table ) and POST (verified the `createPost` _Lambda_ function successfully executed and verified, using the front-end website's Submit Comment form to verify the `POST`). However, when the front-end site tried to issue a GET Request, the endpoint would throw an internal server error (If memory serves, the error status code was 502.)
+
+After setting the GetPosts Lambda execution to use the same permissions as the CreatePost Lambda function, the front-end was able to posts returned by GET. 
+
+
