@@ -10,7 +10,7 @@ exports.handler = (event, context, callback) => {
     //     return;
     // }
     
-    console.log('event', event);
+    // console.log('event', event);
     // Because we're using a Cognito User Pools authorizer, all of the claims
     // included in the authentication token are provided in the request context.
     // This includes the username as well as other attributes.
@@ -21,15 +21,16 @@ exports.handler = (event, context, callback) => {
     // into an object. A more robust implementation might inspect the Content-Type
     // header first and use a different parsing strategy based on that value.
 
-    const requestBody = JSON.parse(event.body);
-    const timeStamp = new Date().toISOString();
-  
-    const message = {
+    var requestBody = JSON.parse(event.body);
+    var timeStamp = new Date().toISOString();
+    // console.log('requestBody', requestBody);
+    var message = {
       title: requestBody.submissionTitle,
       body: requestBody.submissionBody,
       dealership: requestBody.dealership,
       group: requestBody.group
     };
+    // console.log('message', message);
 
     // Parrot the message back
     // Start with a default PostId of 0
@@ -45,7 +46,7 @@ exports.handler = (event, context, callback) => {
         "headers": {
             "Access-Control-Allow-Origin": "*"
         },
-        'body': JSON.stringify(responseBody),
+        'body': responseBody,
         "isBase64Encoded": false
     };
     
@@ -79,9 +80,16 @@ exports.handler = (event, context, callback) => {
     }
     if (validateMessage(message).length === 0) {
         console.log('validate message 0 errors');
+        // console.log(postId);
+        console.log('successResponse', successResponse); 
         var postId = createUniquePostIdFromMessage(message, timeStamp); // Update postId
-        responseBody.message.PostId = postId;
+        successResponse.body.message["PostId"] = postId;
+        console.log('successResponse.body.message.postId before of then', successResponse.body.message["PostId"]);
         recordPost(postId, message).then(() => {
+
+            successResponse.body = JSON.stringify(successResponse.body);
+            console.log('successResponse.body.responseBody inside of then', successResponse.body);
+            
             // You can use the callback function to provide a return value from your Node.js
             // Lambda functions. The first parameter is used for failed invocations. The
             // second parameter specifies the result data of the invocation.
@@ -133,5 +141,5 @@ exports.handler = (event, context, callback) => {
             },
           });
         }
-};
+    };
     
