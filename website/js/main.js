@@ -434,9 +434,13 @@ function createPost(post) {
 function completeRequest(result) {
     console.log('Response received from API: ', result);
     $('.alert').remove(); // Remove the submitting alert.
-    if (result.success) {
+    // Assume the existence of 
+    if (result.message) {
+        result.data = [];
+        result.data.push(result.message);
         updateData(result.data);
     } else {
+        result.errors = [];
         serverErrorModal(result.errors); // response.data is an array of objects)
     }
 
