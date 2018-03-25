@@ -53,3 +53,5 @@ Debug log:
 After setting the GetPosts Lambda execution to use the same permissions as the CreatePost Lambda function, the front-end was able to posts returned by GET. 
 
 
+# [MANUALLY ENABLE CORS FOR GET REQUEST](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html)
+- Unable to figure out how to configure headers in CloudFormation tempalte ApiGateway for GET requests to map, so manually enable through the AWS Console.

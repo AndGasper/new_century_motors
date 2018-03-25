@@ -523,7 +523,7 @@
             - ".amazonaws.com/prod"
       Export:
         Name: MessageBoardApiUrl
-        
+
     CloudWatchLogGroupName:
       Description: Name of cloud watch logs group
       Value: !Ref MessageBoardApiLogPermissions
