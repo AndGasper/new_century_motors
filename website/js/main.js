@@ -434,11 +434,17 @@ function createPost(post) {
 function completeRequest(result) {
     console.log('Response received from API: ', result);
     $('.alert').remove(); // Remove the submitting alert.
-    // Assume the existence of 
+    // Assume result.data is *JUST* the posts for a given dealership 
+    if (result.data) {
+        appendPostsToPage(result.data); // append the posts to the page
+        return;
+    }
+    // result.message implies the 
     if (result.message) {
         result.data = [];
         result.data.push(result.message);
-        updateData(result.data);
+        // updateData(result.data);
+        getDataFromServer(); 
     } else {
         result.errors = [];
         serverErrorModal(result.errors); // response.data is an array of objects)
@@ -551,33 +557,79 @@ function courseNameValidation() {
     }
 }
 
-function gradeValidation() {
-    let inputFeedback3 = $("<div class='gradeFeedback'>").addClass("form-control-feedback");
-    const gradeRegex = new RegExp('[0-9]', 'g'); // numbers only for course
-    const grade = $("#studentGrade").val();
-    const score = $("#editScore").val();
-    // if the grade contains at least
-    if ((!gradeRegex.test(grade) && grade !== '') || grade.length > 3 || (parseInt(grade) > 100 || parseInt(grade) < 0)) {
-        $("#studentGradeDiv").addClass("has-danger");
-        ($('.gradeFeedback').length === 0) ? $("#studentGradeDiv").append(inputFeedback3.text("Whole numbers between 0-100 only")) : ('');
-        return;
-    } else {
-        $(".gradeFeedback").remove();
-        $("#studentGradeDiv").removeClass("has-danger");
-        $("#studentGradeDiv").removeClass("has-warning");
-        $("#studentGradeDiv").addClass("has-success");
+// Need to structure returned data into:
+// groups = [dealership1, dealership2]
+// dealership1 = [{PostId, Post, Replies}]
+
+
+// Really the idea is that the whole thing should be "threads" with the initial post being the initial post 
+// but it seems kind of silly given the implementation only has one person able to reply 
+
+function appendPostsToPage(postNodes) {
+    for (var i = 0; i < postNodes.length; i++) {
+        if (postNodes[i].replies && postNodes[i].replies.length !== 0) {
+            var postsList = $("<ul>"); // Only make the list for the top level element
+            postsList.attr({'id': postNodes[i]["PostId"]}); // the first child will bring their parent into the DOM
+            var postsListHeader = $("<h3>");
+            postsListHeader.text(postNodes[i]["Post"].title);
+            postsList.appendChild(bookmarksListHeader);
+            $("body")[0].appendChild(postsList);
+            appendPostsToPage(postNodes[i].replies);
+        } else {
+            var postsList = appendPostToList(postNodes[i]); 
+        }
     }
-    if (!gradeRegex.test(score) && score !== '' || score.length > 3 || (parseInt(score) > 100 || parseInt(score) < 0)) {
-        $("#scoreDiv").addClass("has-danger");
-        $("#scoreDiv").append(inputFeedback3.text("Whole numbers between 0-100 only"));
+
+}
+
+function appendPostToList(postNode) {
+
+    if (!postNode.replies) {
+        // A postNode with no replies does not need to be recursively passed over
+        var post = buildPostItem(postNode);
+        var postListElement = $(postNode["PostId"]);
+        postListElement.appendChild(postListElement);
     } else {
-        $(".gradeFeedback").remove();
-        $("#scoreDiv").removeClass("has-danger");
-        $("#scoreDiv").removeClass("has-warning");
-        $("#scoreDiv").addClass("has-success");
+        console.log('appendPostToList: postNode', postNode);
+        var postSection = $("<ul>"); 
+        postSection.attr({
+            "id": postNode["PostId"],
+            "class": "postSection"
+        });
+        var postsListHeader = $("<h3>"); 
+        postsListHeader.text(postNode.title);
+        postSection.appendChild(bookmarksListHeader);
+        $("body")[0].appendChild(bookmarkSection);
     }
 }
 
+
+function buildPostItem(postNode) {
+    var postListItem = $("<li>"); 
+    postListItem.attr({
+        "id": postNode["PostId"],
+        "class": "postItem"
+    });
+    var postTitle = $("<h3>"); // Create post title
+    postTitle.attr({
+        "textContent": postNode["Post"].title,
+        "class": "postTitle"
+    });
+    
+    var postBody = $("<span class='postBody'>");
+    var postBodyText = $("<p>").attr({
+        "textContent": postNode["Post"].body,
+        "postBody": "postBody"
+    });
+    postBody.appendChild(postBodyText);
+    postTitle.appendChild(postBody);
+    postListItem.appendChild(postTitle); // <li><h3></h3><span><p></p></span></li>
+
+    return postListItem;
+}
+
+
+// [{PostId:<String>, Post: {title: String, body: String, dealership: String, group: String}}]
 $(document).ready(function(){
     $('#submitComment').click(addClicked);
     $('#getDataFromServer').click(getDataFromServer);
