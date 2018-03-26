@@ -436,7 +436,9 @@ function completeRequest(result) {
     $('.alert').remove(); // Remove the submitting alert.
     // Assume result.data is *JUST* the posts for a given dealership 
     if (result.data) {
-        appendPostsToPage(result.data); // append the posts to the page
+        var sortedPosts = sortPostsByGroupAndDealership(result.data); // Pull the unique groups from the messages
+        console.log("sortedPosts", sortedPosts);
+        // appendPostsToPage(result.data); // append the posts to the page
         return;
     }
     // result.message implies the 
@@ -444,12 +446,43 @@ function completeRequest(result) {
         result.data = [];
         result.data.push(result.message);
         // updateData(result.data);
+        
         getDataFromServer(); 
     } else {
         result.errors = [];
         serverErrorModal(result.errors); // response.data is an array of objects)
     }
 
+}
+
+/**
+ * @name sortPostsByGroupAndDealership
+ * @description - Iterate over the posts and pull out the unique ids and dealerships from the posts, then push the posts into the dealerships
+ * @param {array | object} posts 
+ * @return {object (group) | object (dealership) | array (posts) | object (single post) } sortedPosts
+ */
+function sortPostsByGroupAndDealership(posts) {
+    var uniqueGroups = {}; // Start with empty object 
+    var allPosts = posts.length;
+    for (var i = 0; i < allPosts; i++) {
+        var groupName = allPosts[i].group;
+        dealershipName = allPosts[i].dealership;
+        // Create the unique group
+        if (!uniqueGroups[groupName]) {
+            uniqueGroups[groupName] = {};
+        }
+        // Create unique dealerships 
+        if (!uniqueGroups[groupName][dealershipName]) {
+            uniqueGroups[groupName][dealershipName]["posts"] = [];
+        }
+
+        // Now push the posts into the dealerships
+        uniqueGroups[groupName][dealershipName]["posts"].push(allPosts[i]);
+    }
+
+    var sortedPosts = uniqueGroups; 
+
+    return sortedPosts;
 }
 
 function deleteDataFromServer(studentID) {
