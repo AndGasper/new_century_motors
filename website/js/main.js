@@ -467,17 +467,20 @@ function sortPostsByGroupAndDealership(posts) {
     for (var i = 0; i < allPosts; i++) {
         var groupName = posts[i]["Post"]["group"];
         var dealershipName = posts[i]["Post"]["dealership"];
-        // Create the unique group
-        if (!uniqueGroups[groupName]) {
-            uniqueGroups[groupName] = {};
-        }
-        // Create unique dealerships 
-        if (!uniqueGroups[groupName][dealershipName]) {
-            uniqueGroups[groupName][dealershipName]["posts"] = [];
-        }
+        // Quick check to make sure group name and dealership are actually defined.
+        if (groupName && dealershipName) {
+            // Create the unique group
+            if (!uniqueGroups[groupName]) {
+                uniqueGroups[groupName] = {};
+            }
+            // Create unique dealerships 
+            if (!uniqueGroups[groupName][dealershipName]) {
+                uniqueGroups[groupName][dealershipName]["posts"] = [];
+            }
 
-        // Now push the posts into the dealerships
-        uniqueGroups[groupName][dealershipName]["posts"].push(posts[i]);
+            // Now push the posts into the dealerships
+            uniqueGroups[groupName][dealershipName]["posts"].push(posts[i]);
+        }
     }
 
     var sortedPosts = uniqueGroups; 
