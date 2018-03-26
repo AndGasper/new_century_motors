@@ -475,7 +475,9 @@ function sortPostsByGroupAndDealership(posts) {
             }
             // Create unique dealerships 
             if (!uniqueGroups[groupName][dealershipName]) {
-                uniqueGroups[groupName][dealershipName]["posts"] = [];
+                uniqueGroups[groupName][dealershipName] = {
+                    "posts": []
+                };
             }
 
             // Now push the posts into the dealerships
