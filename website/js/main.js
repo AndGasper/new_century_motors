@@ -14,7 +14,7 @@ var MessageBoardApi = window.MessageBoardApi || {};
     alert(error);
     });
 /**
- * student_array - global array to hold student objects
+ * postsArray - global array to hold student objects
  * @type {Array}
  */
 let postsArray = [];
@@ -135,11 +135,11 @@ function addPostToDom(postsArray) {
         // let operationsRow = $("<td class='btn-group-vertical'>");
         // operationsRow.css("border-top", "none");
         // let deleteButton = $("<button>").addClass("btn btn-outline-danger").text("REMOVE");
-        // let editButton = $("<button type='button' class='btn btn-outline-primary' data-toggle='modal' data-target='editStudentModal'>");
+        // let editButton = $("<button type='button' class='btn btn-outline-primary' data-toggle='modal' data-target='replyToPostModal'>");
         // editButton.css("marginRight", "1em");
         // editButton.text("Edit");
         // deleteButton.on("click", removeStudentModal);
-        // editButton.on("click", editStudentModal);
+        // editButton.on("click", replyToPostModal);
         // operationsRow.append(editButton);
         // operationsRow.append(deleteButton); // The formatting could use a little work
         // studentRow.append(operationsRow);
@@ -155,136 +155,79 @@ function reset() {
     submissionBody = $("#submissionBody").val("");
 
 }
+
+
 /**
- * @name - removePost - removes the student object from the student_array
- * @param postInfo
+ * @name - replyToPostModal
  */
-function removePost(postInfo) {
+function replyToPostModal() {
 
-    let postId = postsArray[postInfo]["id"];
-    deleteDataFromServer(postId); // delete the student from the server based on the student's id; student_id: (id value) => formatting
+    // var postInfo = posts_array[$(this).parent().parent().index()];
+    var postInfo = $(this).parent().parent()["0"].id;
+    console.log('postInfo', postInfo);
+
+    // Modal form
+    // Modal frame
+    let modalFade = $("<div class='modal fade' id='replyToPostModal' tabindex='-1' role='dialog' aria-labelledby='replyToPostModalLabel' aria-hidden='true'>");
+    let modalDialog = $("<div class='modal-dialog' role='document'>");
+    let modalContent = $("<div>").addClass("modal-content");
+    let modalHeader = $("<div>").addClass("modal-header");// .text("Modal Header");
+    let modalTitle = $("<div>").addClass("modal-title").text("Reply to Post");
+    let closeModalButton = $("<button type='button' class='close' data-dismiss='modal' aria-label='Close'>");
+    let closeModalButtonSymbol = $("<span aria-hidden='true'>").text("x");
+    closeModalButton.append(closeModalButtonSymbol);
+
+    modalHeader.append(modalTitle);
+    modalHeader.append(closeModalButton);
+    modalContent.append(modalHeader);
+
+    let modalBody = $("<form id='replyForm'>").addClass("modal-body");
+
+    // Reply title input field
+    let modalBodyContentReplyTitle = $("<div class='form-group' id='replyTitleDiv'>");
+    let modalBodyContentReplyTitleLabel = $("<label for='Reply Title' class='form-control-label'>").text("Reply Title");
+    let modalBodyContentReplyTitleField = $("<input type='text' id='replyTitle' class='form-control' onChange=''>");
+    modalBodyContentReplyTitle.append(modalBodyContentReplyTitleLabel);
+    modalBodyContentReplyTitle.append(modalBodyContentReplyTitleField);
+
+    // Reply Body input field
+    let modalBodyContentReplyBody = $("<div class='form-group' id='replyBodyDiv'>"); // Create form group
+    let modalBodyContentReplyBodyLabel = $("<label for='Reply Body' class='form-control-label'>").text("Reply Body"); // Label for course
+    let modalBodyContentReplyBodyField = $("<input type='text' id='replyBody' class='form-control' onChange=''>");
+
+    modalBodyContentReplyBody.append(modalBodyContentReplyBodyLabel);
+    modalBodyContentReplyBody.append(modalBodyContentReplyBodyField);
+
+    modalBody.append(modalBodyContentReplyTitle);
+    modalBody.append(modalBodyContentReplyBody);
+
+    modalContent.append(modalBody);
+
+    let modalFooter = $("<div>").addClass("modal-footer");
+    let cancelReplyButton = $("<button class='btn btn-secondary' data-dismiss='modal'>");
+    cancelReplyButton.text("Cancel");
+
+    let replyButton = $("<button  class='btn btn-primary' data-dismiss='modal'>");
+
+
+    replyButton.on("click", () => {
+        replyToPost(postInfo);
+    }); // Anonymous function to avoid firing as soon as modal loads
+    replyButton.text("Reply");
+    modalFooter.append(cancelReplyButton);
+    modalFooter.append(cancelReplyButton);
+    modalContent.append(modalFooter);
+
+    modalDialog.append(modalContent);
+    modalFade.append(modalDialog);
+
+    $(modalFade).modal("show");
+    // When the modal hides, call the remove method to remove the modal from the DOM which clears the form after use
+    $(modalFade).on('hidden.bs.modal',() => {
+       $(modalFade).remove();
+        $("#replyTitleDiv, #replyBodyDiv").removeClass("has-success");
+    });
 }
-
-// /**
-//  * @name - removePostModal
-//  */
-// function removePostModal() {
-//     let indexInPostArray = $(this).parent().parent().index(); // To know who to delete
-//     // Modal frame
-//     let modalFade = $("<div class='modal fade' id='editStudentModal' tabindex='-1' role='dialog' aria-labelledby='editStudentModalLabel' aria-hidden='true'>");
-//     let modalDialog = $("<div class='modal-dialog' role='document'>");
-//     let modalContent = $("<div>").addClass("modal-content"); // Modal content
-//     let modalHeader = $("<div>").addClass("modal-header"); // Modal header
-//     let modalTitle = $("<div>").addClass("modal-title").text("Are you sure you want to remove this student?");
-//     let closeModalButton = $("<button type='button' class='close' data-dismiss='modal' aria-label='Close'>");
-//     let closeModalButtonSymbol = $("<span aria-hidden='true'>").text("x");
-//     closeModalButton.append(closeModalButtonSymbol);
-
-//     modalHeader.append(modalTitle);
-//     modalHeader.append(closeModalButton);
-//     modalContent.append(modalHeader);
-
-
-//     let modalFooter = $("<div>").addClass("modal-footer");
-//     let cancelDeleteButton = $("<button class='btn btn-secondary' data-dismiss='modal'>");
-//     cancelDeleteButton.text("Cancel");
-//     let confirmDeleteButton= $("<button class='btn btn-danger' data-dismiss='modal'>");
-
-//     confirmDeleteButton.on("click", () => {
-//         removeStudent(indexInStudentArray);
-//     }); // Anonymous function to avoid firing as soon as modal loads
-//     confirmDeleteButton.text("REMOVE");
-//     modalFooter.append(cancelDeleteButton);
-//     modalFooter.append(confirmDeleteButton);
-//     modalContent.append(modalFooter);
-
-//     modalDialog.append(modalContent);
-//     modalFade.append(modalDialog);
-
-//     $(modalFade).modal("show");
-//     // When the modal hides, call the remove method to remove the modal from the DOM
-//     $(modalFade).on('hidden.bs.modal',() => {
-//         $(modalFade).remove();
-//     });
-// }
-// /**
-//  * @name - editStudentModal
-//  */
-// function editStudentModal() {
-
-//     let studentInfo = student_array[$(this).parent().parent().index()];
-
-//     // Modal form
-//     // Modal frame
-//     let modalFade = $("<div class='modal fade' id='editStudentModal' tabindex='-1' role='dialog' aria-labelledby='editStudentModalLabel' aria-hidden='true'>");
-//     let modalDialog = $("<div class='modal-dialog' role='document'>");
-//     let modalContent = $("<div>").addClass("modal-content");
-//     let modalHeader = $("<div>").addClass("modal-header");// .text("Modal Header");
-//     let modalTitle = $("<div>").addClass("modal-title").text("Edit Student");
-//     let closeModalButton = $("<button type='button' class='close' data-dismiss='modal' aria-label='Close'>");
-//     let closeModalButtonSymbol = $("<span aria-hidden='true'>").text("x");
-//     closeModalButton.append(closeModalButtonSymbol);
-
-//     modalHeader.append(modalTitle);
-//     modalHeader.append(closeModalButton);
-//     modalContent.append(modalHeader);
-
-//     let modalBody = $("<form>").addClass("modal-body");
-
-//     // Student name input field
-//     let modalBodyContentStudent= $("<div class='form-group' id='editNameDiv'>");
-//     let modalBodyContentStudentNameLabel = $("<label for='Student Name' class='form-control-label'>").text("Student Name");
-//     let modalBodyContentStudentName = $("<input type='text' id='name' class='form-control' onChange='nameValidation()'>").text(studentInfo.name);
-//     modalBodyContentStudentName.val(studentInfo.name);
-//     modalBodyContentStudent.append(modalBodyContentStudentNameLabel);
-//     modalBodyContentStudent.append(modalBodyContentStudentName);
-
-//     // Student Course input field
-//     let modalBodyContentCourse= $("<div class='form-group' id='courseNameDiv'>"); // Create form group
-//     let modalBodyContentCourseNameLabel = $("<label for='Course name' class='form-control-label'>").text("Course Name"); // Label for course
-//     let modalBodyContentCourseName = $("<input type='text' id='editCourse' class='form-control' onChange='courseNameValidation()'>");
-//     modalBodyContentCourseName.val(studentInfo.course_name);
-//     modalBodyContentCourse.append(modalBodyContentCourseNameLabel);
-//     modalBodyContentCourse.append(modalBodyContentCourseName);
-
-//     //Student Course Grade input field
-//     let modalBodyContentGrade = $("<div class='form-group' id='scoreDiv'>");
-//     let modalBodyContentGradeLabel = $("<label for='Course grade' class='form-control-label'>").text("Course Grade");
-//     let modalBodyContentGradeValue = $("<input type='text' id='editScore' class='form-control' onChange='gradeValidation()'>");
-//     modalBodyContentGradeValue.val(studentInfo.grade);
-//     modalBodyContentGrade.append(modalBodyContentGradeLabel);
-//     modalBodyContentGrade.append(modalBodyContentGradeValue);
-
-//     modalBody.append(modalBodyContentStudent);
-//     modalBody.append(modalBodyContentCourse);
-//     modalBody.append(modalBodyContentGrade);
-//     modalContent.append(modalBody);
-
-//     let modalFooter = $("<div>").addClass("modal-footer");
-//     let cancelEditButton = $("<button class='btn btn-secondary' data-dismiss='modal'>");
-//     cancelEditButton.text("Cancel");
-
-//     let confirmEditButton = $("<button  class='btn btn-primary' data-dismiss='modal'>");
-
-
-//     confirmEditButton.on("click", () => {
-//         editStudent(studentInfo);
-//     }); // Anonymous function to avoid firing as soon as modal loads
-//     confirmEditButton.text("Confirm Edit");
-//     modalFooter.append(cancelEditButton);
-//     modalFooter.append(confirmEditButton);
-//     modalContent.append(modalFooter);
-
-//     modalDialog.append(modalContent);
-//     modalFade.append(modalDialog);
-
-//     $(modalFade).modal("show");
-//     // When the modal hides, call the remove method to remove the modal from the DOM which clears the form after use
-//     $(modalFade).on('hidden.bs.modal',() => {
-//        $(modalFade).remove();
-//         $("#studentNameDiv, #studentCourseDiv, #studentGradeDiv").removeClass("has-success");
-//     });
-// }
 
 /**
  * @name - serverErrorModal - Modal with contextual message appears on screen following server-side error.
@@ -332,31 +275,29 @@ function serverErrorModal(errorType) {
 
 }
 
-// /**
-// * @name - editStudent - Use information from the modal to send info to the server
-// * @param studentObj
-//  */
-// function editStudent(studentObj) {
-//     // studentObj === studentInfo, contains id of student
-//     let updatedInfo = {
-//         id: studentObj.id,
-//         student: $("#name").val(),
-//         course: $("#editCourse").val(),
-//         score: $("#editScore").val()
-//     };
-//     if (updatedInfo.student === '' && updatedInfo.course === '' && updatedInfo.score === '') {
-//         $("#editNameDiv").addClass('has-warning');
-//         $("#courseNameDiv").addClass('has-warning');
-//         $("#scoreDiv").addClass('has-warning');
+/**
+* @name - replyToPost - Use information from the modal to send info to the server
+* @param replyObj
+ */
+function replyToPost(replyObj) {
 
-//     }
-//     if (updatedInfo.student !== '' && updatedInfo.course !== '' && updatedInfo.score !== '') {
-//         if ((updatedInfo.student.length > 2 && !parseInt(updatedInfo.student)) && (updatedInfo.course.length > 0 && updatedInfo.course.length <= 20) && (parseInt(updatedInfo.score) >= 0 && parseInt(updatedInfo.score) <= 100)) {
-//             editDataOnServer(updatedInfo);
-//         }
-//     }
+    let replyInfo = {
+        id: replyObj.originalPostId,
+        title: $("#replyTtile").val(),
+        body: $("#replyBody").val(),
+    };
+    if (replyInfo.title === '' && replyInfo.body === '') {
+        $("#replyTitleDiv").addClass('has-warning');
+        $("#replyBodyDiv").addClass('has-warning')
 
-// }
+    }
+    if (replyInfo.title !== '' && replyInfo.body !== '') {
+        if (replyInfo.title > 2 && replyInfo.body.length < 10000) {
+            sendReplyToPost(replyInfo);
+        }
+    }
+
+}
 /**
  * getDataFromServer - Get post data from the server; Notify user if no data is available
  */
@@ -403,6 +344,26 @@ function writeDataToServer(student) {
         error: function(response) {
             $('.alert').remove(); // Remove the alert regardless of success or failure
             serverErrorModal(["uh oh"]); // In case of error, show a generic something was wrong modal
+        }
+    });
+}
+
+function sendReplyToPost(replyPost) {
+    let pendingAlert = $("<div class='alert alert-warning' style='text-align: center'>").append('<strong>Submitting post</strong>');
+    $("body").append(pendingAlert);
+    $.ajax({
+        method: 'POST',
+        url: _config.api.invokeUrl + '/posts',
+        headers: {
+            Authorization: authToken,
+        },
+        data: JSON.stringify(replyPost),
+        contentType: 'application/json',
+        success: completeRequest,
+        error: function ajaxError(jqXHR, textStatus, errorThrown) {
+            console.error('Error creating post: ', textStatus, ', Details: ', errorThrown);
+            console.error('Response: ', jqXHR.responseText);
+            alert('An error occurred when creating your post:\n' + jqXHR.responseText);
         }
     });
 }
@@ -568,6 +529,14 @@ function appendPostToList(postNode) {
             "id": postNode["PostId"],
             "class": "postSection"
         });
+        let operationsRow = $("<td class='btn-group-vertical'>");
+        operationsRow.css("border-top", "none");
+        let replyButton = $("<button type='button' class='btn btn-outline-primary' data-toggle='modal' data-target='replyToPostModal'>");
+        replyButton.css("marginRight", "1em");
+        replyButton.text("Reply");
+        replyButton.on("click", replyToPostModal);
+        operationsRow.append(replyButton);
+        post[0].appendChild(operationsRow[0]);
         postSection[0].appendChild(post[0]);
         $(`#${groupId} > #${dealershipId}`)[0].appendChild(postSection[0]);
     } else {
