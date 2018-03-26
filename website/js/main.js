@@ -465,8 +465,8 @@ function sortPostsByGroupAndDealership(posts) {
     var uniqueGroups = {}; // Start with empty object 
     var allPosts = posts.length;
     for (var i = 0; i < allPosts; i++) {
-        var groupName = allPosts[i].group;
-        dealershipName = allPosts[i].dealership;
+        var groupName = posts[i]["Post"]["group"];
+        var dealershipName = posts[i]["Post"]["dealership"];
         // Create the unique group
         if (!uniqueGroups[groupName]) {
             uniqueGroups[groupName] = {};
@@ -477,7 +477,7 @@ function sortPostsByGroupAndDealership(posts) {
         }
 
         // Now push the posts into the dealerships
-        uniqueGroups[groupName][dealershipName]["posts"].push(allPosts[i]);
+        uniqueGroups[groupName][dealershipName]["posts"].push(posts[i]);
     }
 
     var sortedPosts = uniqueGroups; 
