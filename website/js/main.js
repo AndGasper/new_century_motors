@@ -116,37 +116,6 @@ function updateData(arrayOfPosts) {
 
 
 /**
- * addPostToDom - take in a post object, create html elements from the values and then append the elements
- * into the .postsListTable tbody
- * @param postsArray (an array of objects)
- */
-function addPostToDom(postsArray) {
-    $(".postsListTable").empty(); // Empty out the table
-    let keys = ["title", "body","group", "dealership"];
-    for (let i = 0; i < postsArray.length; i++) {
-        let postRow = $("<tr>");
-        for (let j = 0; j < keys.length; j++) {
-            let td = $("<td>");
-            let postInfo = postsArray[i][keys[j]];
-            td.append(postInfo);
-            postRow.append(td);
-        }
-        $(".postsListTable").append(postRow);
-        // let operationsRow = $("<td class='btn-group-vertical'>");
-        // operationsRow.css("border-top", "none");
-        // let deleteButton = $("<button>").addClass("btn btn-outline-danger").text("REMOVE");
-        // let editButton = $("<button type='button' class='btn btn-outline-primary' data-toggle='modal' data-target='replyToPostModal'>");
-        // editButton.css("marginRight", "1em");
-        // editButton.text("Edit");
-        // deleteButton.on("click", removeStudentModal);
-        // editButton.on("click", replyToPostModal);
-        // operationsRow.append(editButton);
-        // operationsRow.append(deleteButton); // The formatting could use a little work
-        // studentRow.append(operationsRow);
-
-    }
-}
-/**
  * @name - reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
  */
 function reset() {
@@ -165,6 +134,7 @@ function replyToPostModal() {
     // var postInfo = posts_array[$(this).parent().parent().index()];
     var postInfo = $(this).parent().parent()["0"].id;
     console.log('postInfo', postInfo);
+
 
     // Modal form
     // Modal frame
@@ -277,12 +247,12 @@ function serverErrorModal(errorType) {
 
 /**
 * @name - replyToPost - Use information from the modal to send info to the server
-* @param replyObj
+* @param originalPostId
  */
-function replyToPost(replyObj) {
+function replyToPost(originalPostId) {
 
     let replyInfo = {
-        id: replyObj.originalPostId,
+        id: originalPostId,
         title: $("#replyTtile").val(),
         body: $("#replyBody").val(),
     };
