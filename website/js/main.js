@@ -588,7 +588,7 @@ function appendPostToList(postNode) {
         // A postNode with no replies does not need to be recursively passed over
         var post = buildPostItem(postNode);
         var postListElement = $(postNode["PostId"]);
-        postListElement.appendChild(postListElement);
+        postListElement[0].appendChild(postListElement[0]);
     } else {
         console.log('appendPostToList: postNode', postNode);
         var postSection = $("<ul>"); 
@@ -598,8 +598,8 @@ function appendPostToList(postNode) {
         });
         var postsListHeader = $("<h3>"); 
         postsListHeader.text(postNode.title);
-        postSection.appendChild(bookmarksListHeader);
-        $("body")[0].appendChild(bookmarkSection);
+        postSection[0].appendChild(postsListHeader[0]);
+        $("body")[0].appendChild(postSection[0]);
     }
 }
 
@@ -621,9 +621,9 @@ function buildPostItem(postNode) {
         "textContent": postNode["Post"].body,
         "postBody": "postBody"
     });
-    postBody.appendChild(postBodyText);
-    postTitle.appendChild(postBody);
-    postListItem.appendChild(postTitle); // <li><h3></h3><span><p></p></span></li>
+    postBody[0].appendChild(postBodyText[0]);
+    postTitle[0].appendChild(postBody[0]);
+    postListItem[0].appendChild(postTitle[0]); // <li><h3></h3><span><p></p></span></li>
 
     return postListItem;
 }
