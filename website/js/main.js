@@ -438,7 +438,17 @@ function completeRequest(result) {
     if (result.data) {
         var sortedPosts = sortPostsByGroupAndDealership(result.data); // Pull the unique groups from the messages
         console.log("sortedPosts", sortedPosts);
-        // appendPostsToPage(result.data); // append the posts to the page
+        var groups = Object.keys(sortedPosts);
+        for (var i = 0; i < groups.length; i++) {
+            appendGroupToPage(groups[i]);
+            var dealerships = Object.keys(sortedPosts[groups[i]]);
+            for (var j = 0; j < dealerships.length; j++) {
+                appendDealershipToGroup(dealerships[j], groups[i]); 
+                var dealershipPosts = sortedPosts[groups[i]][dealerships[j]]["posts"];
+                appendPostsToPage(dealershipPosts); // append the posts to the page
+            }
+
+        }
         return;
     }
     // result.message implies the 
@@ -453,6 +463,36 @@ function completeRequest(result) {
         serverErrorModal(result.errors); // response.data is an array of objects)
     }
 
+}
+
+function trimWhiteSpaceAndConvertSpaceToDash(stringWithSpaces) {
+    
+    var editedString = stringWithSpaces.trim();
+    editedString = stringWithSpaces.replace(/\s/g, '-');
+    return editedString;
+}
+
+function appendGroupToPage(groupName) {
+    var groupRow = $("<div>").addClass("row");
+    var groupId = trimWhiteSpaceAndConvertSpaceToDash(groupName);
+    groupRow.attr({'id': groupId});
+    var groupHeader = $("<h2>");
+    groupHeader.text(groupName);
+    groupRow[0].appendChild(groupHeader[0]);
+    $('.container')[0].appendChild(groupRow[0]);
+    return;
+}
+
+function appendDealershipToGroup(dealershipName, groupName) {
+    var dealershipRow = $("<div>").addClass("row");
+    var groupId = trimWhiteSpaceAndConvertSpaceToDash(groupName);
+    var dealershipId = trimWhiteSpaceAndConvertSpaceToDash(dealershipName);
+    dealershipRow.attr({'id': dealershipId});
+    var dealershipHeader = $("<h3>");
+    dealershipHeader.text(dealershipName);
+    dealershipRow[0].appendChild(dealershipHeader[0]);
+    $(`#${groupId}`)[0].appendChild(dealershipRow[0]);
+    return;
 }
 
 /**
@@ -490,110 +530,6 @@ function sortPostsByGroupAndDealership(posts) {
     return sortedPosts;
 }
 
-function deleteDataFromServer(studentID) {
-    let dataObject = {
-        "id": studentID
-    };
-    let pendingAlert = $("<div class='alert alert-danger' style='text-align: center'>").append('<strong>Removing student</strong>');
-    $("body").append(pendingAlert);
-    $.ajax({
-        data: dataObject,
-        dataType: "json",
-        method: "POST",
-        url: "data.php?action=delete",
-        success: function(response) {
-            $('.alert').remove(); // Remove the alert regardless of success or failure
-            getDataFromServer(); // Following the deletion, DOM needs to be updated
-        },
-
-        error: function(response) {
-            $('.alert').remove(); // Remove the alert regardless of success or failure
-            serverErrorModal(["uh oh"]); // In case of error, show a generic something was wrong modal
-        }
-    });
-}
-
-function editDataOnServer(studentObj) {
-    let pendingAlert = $("<div class='alert alert-warning' style='text-align: center'>").append('<strong>Editing student information</strong>');
-    $("body").append(pendingAlert);
-    $.ajax({
-        data: studentObj,
-        dataType: "json",
-        method: "POST",
-        url: "data.php?action=update",
-        success: (response) => {
-            $('.alert').remove(); // Remove the alert regardless of success or failure
-            $("#studentNameDiv, #studentCourseDiv, #studentGradeDiv").removeClass("has-success"); // remove the success fields
-            getDataFromServer(); // Update the dom following the edit
-        },
-        error: (response) => {
-            $('.alert').remove(); // Remove the alert regardless of success or failure
-            serverErrorModal(["uh oh"]); // In case of error, show a generic something was wrong modal
-        }
-    });
-}
-
-
-function nameValidation() {
-    const studentName = $("#studentName").val();
-    const editStudentName = $("#name").val();
-    const alphabeticalCharacterRegex = new RegExp('[A-z]{2,}','g'); // ascii 65 -> ascii 122; applies to name and course
-
-    // having three inputFeedback divs is a cheap work around for the divs disappearing when trying to append
-    let inputFeedback = $("<div class='nameFeedback'>").addClass("form-control-feedback");
-
-    if (!alphabeticalCharacterRegex.test(studentName) && studentName !== '') {
-        $("#studentNameDiv").addClass("has-danger");
-        ($(".nameFeedback").length === 0) ? $("#studentNameDiv").append(inputFeedback.text("Names must contain at least two (2) characters")) : (''); // Ternary to only append once
-        return;
-    } else {
-        $(".nameFeedback").remove();
-        $("#studentNameDiv").removeClass("has-danger");
-        $("#studentNameDiv").removeClass("has-warning");
-        $("#studentNameDiv").addClass("has-success");
-    }
-    if (!alphabeticalCharacterRegex.test(editStudentName) && editStudentName !== '') {
-        $("#editNameDiv").addClass("has-danger");
-        $("#editNameDiv").append(inputFeedback.text("Letters only, please"));
-    } else {
-        $(".nameFeedback").remove();
-        $("#editNameDiv").removeClass("has-danger");
-        $("#editNameDiv").removeClass("has-warning");
-        $("#editNameDiv").addClass("has-success");
-    }
-
-}
-
-function courseNameValidation() {
-    const alphabeticalCharacterRegex = new RegExp('[A-z]','g'); // ascii 65 -> ascii 122; applies to name and course
-    let inputFeedback2 = $("<div class='courseFeedback'>").addClass("form-control-feedback");
-    const courseName = $("#course").val();
-    const editCourseName = $("#editCourse").val();
-
-    // course name is not empty, and the field is not just empty;
-    if ((!alphabeticalCharacterRegex.test(courseName) && courseName !== '') || courseName.length > 20) {
-
-        $("#studentCourseDiv").addClass("has-danger");
-        ($('.courseFeedback').length === 0) ? $("#studentCourseDiv").append(inputFeedback2.text("Valid course names are less than twenty (20) characters and contain at least one letter")) : ('');
-        return;
-    } else {
-        $(".courseFeedback").remove(); // Remove the feed back text
-        $("#studentCourseDiv").removeClass("has-danger"); // Remove danger highlight
-        $("#studentCourseDiv").removeClass("has-warning"); // Remove warning highlight
-        (courseName !== '') ? $("#studentCourseDiv").addClass("has-success") : $("#studentCourseDiv").removeClass("has-success"); // Add success only if the field is not empty
-    }
-    // edit course name modal
-    // editCourseName !== undefined to prevent checking .length of undefined. Quick and dirty way
-    if ((!alphabeticalCharacterRegex.test(editCourseName) && editCourseName !== '') || (editCourseName !== undefined ? editCourseName.length > 20 : '')) {
-        $("#courseNameDiv").addClass("has-danger");
-        ($('.courseFeedback').length === 0) ? $("#courseNameDiv").append(inputFeedback2.text("Valid course names are less than twenty (20) characters and contain at least one letter")) : ('');
-    } else {
-        $(".courseFeedback").remove();
-        $("#courseNameDiv").removeClass("has-danger");
-        $("#courseNameDiv").removeClass("has-warning");
-        $("#courseNameDiv").addClass("has-success");
-    }
-}
 
 // Need to structure returned data into:
 // groups = [dealership1, dealership2]
@@ -625,8 +561,15 @@ function appendPostToList(postNode) {
     if (!postNode.replies) {
         // A postNode with no replies does not need to be recursively passed over
         var post = buildPostItem(postNode);
-        var postListElement = $(postNode["PostId"]);
-        postListElement[0].appendChild(postListElement[0]);
+        var groupId = trimWhiteSpaceAndConvertSpaceToDash(postNode["Post"]["group"]);
+        var dealershipId = trimWhiteSpaceAndConvertSpaceToDash(postNode["Post"]["dealership"]);
+        var postSection = $("<ul>"); 
+        postSection.attr({
+            "id": postNode["PostId"],
+            "class": "postSection"
+        });
+        postSection[0].appendChild(post[0]);
+        $(`#${groupId} > #${dealershipId}`)[0].appendChild(postSection[0]);
     } else {
         console.log('appendPostToList: postNode', postNode);
         var postSection = $("<ul>"); 
@@ -634,7 +577,7 @@ function appendPostToList(postNode) {
             "id": postNode["PostId"],
             "class": "postSection"
         });
-        var postsListHeader = $("<h3>"); 
+        var postsListHeader = $("<h4>"); 
         postsListHeader.text(postNode.title);
         postSection[0].appendChild(postsListHeader[0]);
         $("body")[0].appendChild(postSection[0]);
@@ -655,10 +598,7 @@ function buildPostItem(postNode) {
     });
     
     var postBody = $("<span class='postBody'>");
-    var postBodyText = $("<p>").attr({
-        "textContent": postNode["Post"].body,
-        "postBody": "postBody"
-    });
+    var postBodyText = $("<p>").text(postNode["Post"].body);
     postBody[0].appendChild(postBodyText[0]);
     postTitle[0].appendChild(postBody[0]);
     postListItem[0].appendChild(postTitle[0]); // <li><h3></h3><span><p></p></span></li>
