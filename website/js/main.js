@@ -295,29 +295,6 @@ function getDataFromServer() {
     });
 }
 
-function writeDataToServer(student) {
-    let pendingAlert = $("<div class='alert alert-warning' style='text-align: center'>").append('<strong>Adding student</strong>');
-    $("body").append(pendingAlert);
-    // studentObj contains name, course, and grade
-    $.ajax({
-        data: student,
-        dataType: "json",
-        method: "POST",
-        url: "data.php?action=insert",
-        success: function(response) {
-            $('.alert').remove(); // Remove the alert regardless of success or failure
-            if (response.success === true) {
-                student.id = response.insertID; // give the student an ID
-                getDataFromServer(); // after inserting a student, make a call to the server to get the student list
-            }
-        },
-        error: function(response) {
-            $('.alert').remove(); // Remove the alert regardless of success or failure
-            serverErrorModal(["uh oh"]); // In case of error, show a generic something was wrong modal
-        }
-    });
-}
-
 function sendReplyToPost(replyPost) {
     let pendingAlert = $("<div class='alert alert-warning' style='text-align: center'>").append('<strong>Submitting post</strong>');
     $("body").append(pendingAlert);
