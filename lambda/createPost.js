@@ -25,15 +25,17 @@ exports.handler = (event, context, callback) => {
     if (requestBody.id) {
         var message = {
             originalPost: requestBody.id,
-            title: requestBody.submissionTitle,
-            body: requestBody.submissionBody,
+            title: requestBody.title,
+            body: requestBody.body,
+            dealership: 'reply',
+            group: 'reply',
         };
     } else {
         var message = {
             title: requestBody.submissionTitle,
             body: requestBody.submissionBody,
             dealership: requestBody.dealership,
-            group: requestBody.group;
+            group: requestBody.group
         };
            
     }
@@ -91,6 +93,7 @@ exports.handler = (event, context, callback) => {
         console.log('successResponse.body.message.postId before of then', successResponse.body.message["PostId"]);
         // Intentional duplicate code blocks for then statement just to verify the replies work
         if (message.originalPost) {
+            responseBody.data = [];
             recordReply(message).then(() => {
                 successResponse.body = JSON.stringify(successResponse.body);
                 console.log('successResponse.body.responseBody inside of then', successResponse.body);
@@ -121,19 +124,21 @@ exports.handler = (event, context, callback) => {
             }).promise();
         }
 
-        function replyToPost(reply) {
-            var Params = {
+        function recordReply(reply) {
+            console.log('recordReply reply', reply);
+            var params = {
                 TableName: "Posts",
                 Key: {
                     "PostId": reply.originalPost
                 },
-                UpdateExpression: "set post.replies = :r",
+                UpdateExpression: "SET Post.replies = :r",
                 ExpressionAttributeValues: {
-                    ":r": reply
+                    ":r": [reply]
                 },
                 ReturnValues: "UPDATED_NEW"  
             };
             return ddb.update(params, function(error, result) {
+                console.log('result', result);
                 if (error) {
                     console.log('error', error);
                     responseBody.data.push('Error replying');
@@ -165,5 +170,5 @@ exports.handler = (event, context, callback) => {
             },
           });
         }
-    };
-    
+    }
+}

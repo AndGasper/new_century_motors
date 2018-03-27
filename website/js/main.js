@@ -262,7 +262,7 @@ function replyToPost(originalPostId) {
 
     }
     if (replyInfo.title !== '' && replyInfo.body !== '') {
-        if (replyInfo.title > 2 && replyInfo.body.length < 10000) {
+        if (replyInfo.title.length > 2 && replyInfo.body.length < 10000) {
             sendReplyToPost(replyInfo);
         }
     }
