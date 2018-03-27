@@ -76,6 +76,7 @@
                   Action: 
                     - dynamodb:PutItem
                     - dynamodb:Scan
+                    - dynamodb:UpdateItem
                   Resource: !GetAtt PostsTable.Arn
   
     GetPostsExecutionRole:
