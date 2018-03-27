@@ -450,13 +450,14 @@ function sortPostsByGroupAndDealership(posts) {
 
 function appendPostsToPage(postNodes) {
     for (var i = 0; i < postNodes.length; i++) {
-        if (postNodes[i].replies && postNodes[i].replies.length !== 0) {
+        if (postNodes[i].replies && Object.keys(postNodes[i].replies.length) !== 0) {
             var postsList = $("<ul>"); // Only make the list for the top level element
             postsList.attr({'id': postNodes[i]["PostId"]}); // the first child will bring their parent into the DOM
-            var postsListHeader = $("<h3>");
+            var postsListHeader = $("<h4>");
             postsListHeader.text(postNodes[i]["Post"].title);
             postsList.appendChild(bookmarksListHeader);
             $("body")[0].appendChild(postsList);
+            console.log('postNodes[i].replies', postNodes[i].replies);
             appendPostsToPage(postNodes[i].replies);
         } else {
             var postsList = appendPostToList(postNodes[i]); 
@@ -487,18 +488,19 @@ function appendPostToList(postNode) {
         post[0].appendChild(operationsRow[0]);
         postSection[0].appendChild(post[0]);
         $(`#${groupId} > #${dealershipId}`)[0].appendChild(postSection[0]);
-    } else {
-        console.log('appendPostToList: postNode', postNode);
-        var postSection = $("<ul>"); 
-        postSection.attr({
-            "id": postNode["PostId"],
-            "class": "postSection"
-        });
-        var postsListHeader = $("<h4>"); 
-        postsListHeader.text(postNode.title);
-        postSection[0].appendChild(postsListHeader[0]);
-        $("body")[0].appendChild(postSection[0]);
-    }
+    } 
+    // else {
+    //     console.log('appendPostToList: postNode', postNode);
+    //     var postSection = $("<ul>"); 
+    //     postSection.attr({
+    //         "id": postNode["PostId"],
+    //         "class": "postSection"
+    //     });
+    //     var postsListHeader = $("<h4>"); 
+    //     postsListHeader.text(postNode.title);
+    //     postSection[0].appendChild(postsListHeader[0]);
+    //     $("body")[0].appendChild(postSection[0]);
+    // }
 }
 
 
