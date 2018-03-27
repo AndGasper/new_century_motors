@@ -253,7 +253,7 @@ function replyToPost(originalPostId) {
 
     let replyInfo = {
         id: originalPostId,
-        title: $("#replyTtile").val(),
+        title: $("#replyTitle").val(),
         body: $("#replyBody").val(),
     };
     if (replyInfo.title === '' && replyInfo.body === '') {
