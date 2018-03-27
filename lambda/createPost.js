@@ -15,24 +15,28 @@ exports.handler = (event, context, callback) => {
     // included in the authentication token are provided in the request context.
     // This includes the username as well as other attributes.
     // const username = event.requestContext.authorizer.claims['cognito:username'];
+    console.log('event.requestContext', event.requestContext);
   
     // The body field of the event in a proxy integration is a raw string.
-    // In order to extract meaningful values, we need to first parse this string
-    // into an object. A more robust implementation might inspect the Content-Type
-    // header first and use a different parsing strategy based on that value.
-
     var requestBody = JSON.parse(event.body);
     var timeStamp = new Date().toISOString();
     // console.log('requestBody', requestBody);
-    var message = {
-      title: requestBody.submissionTitle,
-      body: requestBody.submissionBody,
-      dealership: requestBody.dealership,
-      group: requestBody.group
-    };
-    // console.log('message', message);
-
-    // Parrot the message back
+    // If the request body has an id, then this is a reply 
+    if (requestBody.id) {
+        var message = {
+            originalPost: requestBody.id,
+            title: requestBody.submissionTitle,
+            body: requestBody.submissionBody,
+        };
+    } else {
+        var message = {
+            title: requestBody.submissionTitle,
+            body: requestBody.submissionBody,
+            dealership: requestBody.dealership,
+            group: requestBody.group;
+        };
+           
+    }
     // Start with a default PostId of 0
     var responseBody = {
         "message": {
@@ -40,7 +44,7 @@ exports.handler = (event, context, callback) => {
             "Post": message,
         }
     };
-    
+
     var successResponse = {
         "statusCode": 201,
         "headers": {
@@ -85,25 +89,23 @@ exports.handler = (event, context, callback) => {
         var postId = createUniquePostIdFromMessage(message, timeStamp); // Update postId
         successResponse.body.message["PostId"] = postId;
         console.log('successResponse.body.message.postId before of then', successResponse.body.message["PostId"]);
-        recordPost(postId, message).then(() => {
-
-            successResponse.body = JSON.stringify(successResponse.body);
-            console.log('successResponse.body.responseBody inside of then', successResponse.body);
-            
-            // You can use the callback function to provide a return value from your Node.js
-            // Lambda functions. The first parameter is used for failed invocations. The
-            // second parameter specifies the result data of the invocation.
-  
-            // Because this Lambda function is called by an API Gateway proxy integration
-            // the result object must use the following structure.
-            callback(null, successResponse);
-        }).catch((err) => {
-            console.error(err);
-  
-                // If there is an error during processing, catch it and return
-                // from the Lambda function successfully. Specify a 500 HTTP status
-                // code and provide an error message in the body. This will provide a
-                // more meaningful error response to the end client.
+        // Intentional duplicate code blocks for then statement just to verify the replies work
+        if (message.originalPost) {
+            recordReply(message).then(() => {
+                successResponse.body = JSON.stringify(successResponse.body);
+                console.log('successResponse.body.responseBody inside of then', successResponse.body);
+                callback(null, successResponse);
+            }).catch((err) => {
+                console.error(err);
+                errorResponse(err.message, context.awsRequestId, callback);
+            });
+        } else {
+            recordPost(postId, message).then(() => {
+                successResponse.body = JSON.stringify(successResponse.body);
+                console.log('successResponse.body.responseBody inside of then', successResponse.body);
+                callback(null, successResponse);
+            }).catch((err) => {
+                console.error(err);
                 errorResponse(err.message, context.awsRequestId, callback);
             });
         }
@@ -116,6 +118,28 @@ exports.handler = (event, context, callback) => {
                     Post: post,
                     PostTime: timeStamp,
                 },
+            }).promise();
+        }
+
+        function replyToPost(reply) {
+            var Params = {
+                TableName: "Posts",
+                Key: {
+                    "PostId": reply.originalPost
+                },
+                UpdateExpression: "set post.replies = :r",
+                ExpressionAttributeValues: {
+                    ":r": reply
+                },
+                ReturnValues: "UPDATED_NEW"  
+            };
+            return ddb.update(params, function(error, result) {
+                if (error) {
+                    console.log('error', error);
+                    responseBody.data.push('Error replying');
+                } else {
+                    responseBody.data.push(result);
+                }
             }).promise();
         }
 
