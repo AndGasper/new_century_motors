@@ -531,10 +531,9 @@ function buildPostItem(postNode) {
         "class": "postItem"
     });
     var postTitle = $("<h3>"); // Create post title
-    postTitle.attr({
-        "textContent": postNode["Post"].title,
-        "class": "postTitle"
-    });
+    postTitle.addClass("postTitle");
+    postTitle.text(postNode["Post"].title);
+    console.log('postTitle', postTitle);
     
     var postBody = $("<span class='postBody'>");
     var postBodyText = $("<p>").text(postNode["Post"].body);
