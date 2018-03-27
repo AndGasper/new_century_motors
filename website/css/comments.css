@@ -33,3 +33,7 @@ display: block;
 form, button {
 margin: 0.50em;
 }
+
+.modal-backdrop {
+   opacity: 0.5 !important;
+}

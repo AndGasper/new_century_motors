@@ -138,7 +138,7 @@ function replyToPostModal() {
 
     // Modal form
     // Modal frame
-    let modalFade = $("<div class='modal fade' id='replyToPostModal' tabindex='-1' role='dialog' aria-labelledby='replyToPostModalLabel' aria-hidden='true'>");
+    let modalFade = $("<div class='modal' id='replyToPostModal' tabindex='-1' role='dialog' aria-labelledby='replyToPostModalLabel' aria-hidden='true'>");
     let modalDialog = $("<div class='modal-dialog' role='document'>");
     let modalContent = $("<div>").addClass("modal-content");
     let modalHeader = $("<div>").addClass("modal-header");// .text("Modal Header");
@@ -530,7 +530,7 @@ function buildPostItem(postNode) {
         "id": postNode["PostId"],
         "class": "postItem"
     });
-    var postTitle = $("<h3>"); // Create post title
+    var postTitle = $("<h4>"); // Create post title
     postTitle.addClass("postTitle");
     postTitle.text(postNode["Post"].title);
     console.log('postTitle', postTitle);
