@@ -79,9 +79,9 @@ exports.handler = (event, context, callback) => {
         return postId;
     }
     if (validateMessage(message).length === 0) {
-        console.log('validate message 0 errors');
+        // console.log('validate message 0 errors');
         // console.log(postId);
-        console.log('successResponse', successResponse); 
+        // console.log('successResponse', successResponse); 
         var postId = createUniquePostIdFromMessage(message, timeStamp); // Update postId
         successResponse.body.message["PostId"] = postId;
         console.log('successResponse.body.message.postId before of then', successResponse.body.message["PostId"]);

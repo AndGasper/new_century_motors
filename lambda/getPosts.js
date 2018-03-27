@@ -2,8 +2,8 @@ const AWS = require('aws-sdk');
 const ddb = new AWS.DynamoDB.DocumentClient();
             
 exports.handler = (event, context, callback) => {
-  //console.log('GetPost event:', event);
-  //console.log('GetPost context', context);
+  // console.log('GetPost event:', event);
+  // console.log('GetPost context', context);
 
   var params = {
     TableName: 'Posts'
@@ -18,8 +18,7 @@ exports.handler = (event, context, callback) => {
     "headers": {
         "Access-Control-Allow-Origin": "*"
     },
-    'body': responseBody,
-    "isBase64Encoded": false
+    "body": responseBody,
 };
 
 function getPosts() {

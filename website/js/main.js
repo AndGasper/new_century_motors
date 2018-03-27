@@ -185,7 +185,7 @@ function replyToPostModal() {
     }); // Anonymous function to avoid firing as soon as modal loads
     replyButton.text("Reply");
     modalFooter.append(cancelReplyButton);
-    modalFooter.append(cancelReplyButton);
+    modalFooter.append(replyButton);
     modalContent.append(modalFooter);
 
     modalDialog.append(modalContent);
@@ -321,6 +321,7 @@ function writeDataToServer(student) {
 function sendReplyToPost(replyPost) {
     let pendingAlert = $("<div class='alert alert-warning' style='text-align: center'>").append('<strong>Submitting post</strong>');
     $("body").append(pendingAlert);
+    console.log("sendReplyToPost", replyPost);
     $.ajax({
         method: 'POST',
         url: _config.api.invokeUrl + '/posts',
