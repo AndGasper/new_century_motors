@@ -345,6 +345,10 @@ function completeRequest(result) {
     console.log('Response received from API: ', result);
     $('.alert').remove(); // Remove the submitting alert.
     // Assume result.data is *JUST* the posts for a given dealership 
+    if (result.message && result.data) {
+        $('.posts-list-container').empty();
+        getDataFromServer();
+    }
     if (result.data) {
         var sortedPosts = sortPostsByGroupAndDealership(result.data); // Pull the unique groups from the messages
         console.log("sortedPosts", sortedPosts);
@@ -389,7 +393,7 @@ function appendGroupToPage(groupName) {
     var groupHeader = $("<h2>");
     groupHeader.text(groupName);
     groupRow[0].appendChild(groupHeader[0]);
-    $('.container')[0].appendChild(groupRow[0]);
+    $('.posts-list-container')[0].appendChild(groupRow[0]);
     return;
 }
 
@@ -397,7 +401,11 @@ function appendDealershipToGroup(dealershipName, groupName) {
     var dealershipRow = $("<div>").addClass("row");
     var groupId = trimWhiteSpaceAndConvertSpaceToDash(groupName);
     var dealershipId = trimWhiteSpaceAndConvertSpaceToDash(dealershipName);
-    dealershipRow.attr({'id': dealershipId});
+    dealershipRow.attr({
+        'id': dealershipId,
+        'class': 'col-sm-12 dealershipRow'
+    });
+    
     var dealershipHeader = $("<h3>");
     dealershipHeader.text(dealershipName);
     dealershipRow[0].appendChild(dealershipHeader[0]);
@@ -452,7 +460,7 @@ function sortPostsByGroupAndDealership(posts) {
 function appendPostsToPage(postNodes) {
     for (var i = 0; i < postNodes.length; i++) {
         if (postNodes[i].replies && Object.keys(postNodes[i].replies.length) !== 0) {
-            var postsList = $("<ul>"); // Only make the list for the top level element
+            var postsList = $("<ul class='row'>"); // Only make the list for the top level element
             postsList.attr({'id': postNodes[i]["PostId"]}); // the first child will bring their parent into the DOM
             var postsListHeader = $("<h4>");
             postsListHeader.text(postNodes[i]["Post"].title);
@@ -477,7 +485,7 @@ function appendPostToList(postNode) {
         var postSection = $("<ul>"); 
         postSection.attr({
             "id": postNode["PostId"],
-            "class": "postSection"
+            "class": "dealershipSubmissions row"
         });
         let operationsRow = $("<td class='btn-group-vertical'>");
         operationsRow.css("border-top", "none");
@@ -509,7 +517,7 @@ function buildPostItem(postNode) {
     var postListItem = $("<li>"); 
     postListItem.attr({
         "id": postNode["PostId"],
-        "class": "postItem"
+        "class": "postItem row"
     });
     var postTitle = $("<h4>"); // Create post title
     postTitle.addClass("postTitle");
@@ -519,8 +527,8 @@ function buildPostItem(postNode) {
     var postBody = $("<span class='postBody'>");
     var postBodyText = $("<p>").text(postNode["Post"].body);
     postBody[0].appendChild(postBodyText[0]);
-    postTitle[0].appendChild(postBody[0]);
     postListItem[0].appendChild(postTitle[0]); // <li><h3></h3><span><p></p></span></li>
+    postListItem[0].appendChild(postBody[0]);
 
     return postListItem;
 }

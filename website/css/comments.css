@@ -37,3 +37,11 @@ margin: 0.50em;
 .modal-backdrop {
    opacity: 0.5 !important;
 }
+
+.postItem {
+  display: inline;
+}
+
+.dealershipRow {
+  display: inline;
+}
