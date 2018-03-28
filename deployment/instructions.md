@@ -6,8 +6,9 @@
 2. Drop the website files into the s3 bucket for the website
 3. For each bucket created in Step 1, enable static website hosting
 4. Create the cognito user pool (`user-management.yaml`)
-5. Create the API stack (`backend-api.yaml`)
-    - copy and paste the arn of the user pool generated in step 4
-6. Enable CORS for the API through the API Gateway UI
+6. Drop the zip files of the lambda functions into the Lambda bucket
+7. Create the API stack (`backend-api.yaml`)
+    - copy and paste the arn of the user pool generated in step 5
+8. Enable CORS for the API through the API Gateway UI
 
 
