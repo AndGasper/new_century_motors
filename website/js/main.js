@@ -8,7 +8,8 @@ var MessageBoardApi = window.MessageBoardApi || {};
             authToken = token;
         } else {
             // Get token for anonymous user
-            window.location.href = '/register.html';
+            // window.location.href = '/register.html';
+            authToken = 'abc';
         }
     }).catch(function handleTokenError(error) {
     alert(error);
