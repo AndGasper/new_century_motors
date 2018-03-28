@@ -308,7 +308,7 @@ function sendReplyToPost(replyPost) {
         },
         data: JSON.stringify(replyPost),
         contentType: 'application/json',
-        success: completeRequest,
+        success: handleReply,
         error: function ajaxError(jqXHR, textStatus, errorThrown) {
             console.error('Error creating post: ', textStatus, ', Details: ', errorThrown);
             console.error('Response: ', jqXHR.responseText);
@@ -341,15 +341,18 @@ function createPost(post) {
     });
 }
 
+function handleReply(result) {
+    $('.posts-list-container').children().remove();
+    getDataFromServer();
+    return;
+}
+
 function completeRequest(result) {
     console.log('Response received from API: ', result);
     $('.alert').remove(); // Remove the submitting alert.
     // Assume result.data is *JUST* the posts for a given dealership 
-    if (result.message && result.data) {
-        $('.posts-list-container').empty();
-        getDataFromServer();
-    }
     if (result.data) {
+        $('.posts-list-container').children().remove();
         var sortedPosts = sortPostsByGroupAndDealership(result.data); // Pull the unique groups from the messages
         console.log("sortedPosts", sortedPosts);
         var groups = Object.keys(sortedPosts);
@@ -365,14 +368,7 @@ function completeRequest(result) {
         }
         return;
     }
-    // result.message implies the 
-    if (result.message) {
-        result.data = [];
-        result.data.push(result.message);
-        // updateData(result.data);
-        
-        getDataFromServer(); 
-    } else {
+     else {
         result.errors = [];
         serverErrorModal(result.errors); // response.data is an array of objects)
     }
