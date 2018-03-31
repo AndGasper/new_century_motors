@@ -455,20 +455,30 @@ function sortPostsByGroupAndDealership(posts) {
 
 function appendPostsToPage(postNodes) {
     for (var i = 0; i < postNodes.length; i++) {
-        if (postNodes[i].replies && Object.keys(postNodes[i].replies.length) !== 0) {
-            var postsList = $("<ul class='row'>"); // Only make the list for the top level element
-            postsList.attr({'id': postNodes[i]["PostId"]}); // the first child will bring their parent into the DOM
-            var postsListHeader = $("<h4>");
-            postsListHeader.text(postNodes[i]["Post"].title);
-            postsList.appendChild(bookmarksListHeader);
-            $("body")[0].appendChild(postsList);
-            console.log('postNodes[i].replies', postNodes[i].replies);
-            appendPostsToPage(postNodes[i].replies);
-        } else {
-            var postsList = appendPostToList(postNodes[i]); 
+        var postsList = appendPostToList(postNodes[i]); 
+        if (typeof postNodes[i]["Post"]["replies"] !== undefined) {
+            var postListItem = $("<li>"); 
+            var liId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"])
+            postListItem.attr({
+                "id": `${liId}-reply`,
+                "class": "postItem row"
+            });
+            var replyTitle = $("<h4>"); // Create post title
+            replyTitle.addClass("postTitle");
+            replyTitle.text(postNodes[i]["Post"]["replies"][0].title);
+            var replyBody = $("<span class='postBody'>");
+            var replyBodyText = $("<p>").text(postNodes[i]["Post"]["replies"][0].body);
+            replyBody[0].appendChild(replyBodyText[0]);
+            postListItem[0].appendChild(replyTitle[0]); // <li><h3></h3><span><p></p></span></li>
+            postListItem[0].appendChild(replyBody[0]);
+            console.log('postListItem', postListItem);
+            var originalPostId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"]);
+            var opSection = document.getElementById(originalPostId);
+            opSection.appendChild(postListItem[0]);
+            console.log('opSection', opSection);
+            // $(`#${originalPostId}`)[0].appendChild(postListItem[0]); 
         }
     }
-
 }
 
 function appendPostToList(postNode) {
@@ -479,8 +489,9 @@ function appendPostToList(postNode) {
         var groupId = trimWhiteSpaceAndConvertSpaceToDash(postNode["Post"]["group"]);
         var dealershipId = trimWhiteSpaceAndConvertSpaceToDash(postNode["Post"]["dealership"]);
         var postSection = $("<ul>"); 
+        var ulId = trimWhiteSpaceAndConvertSpaceToDash(postNode["PostId"])
         postSection.attr({
-            "id": postNode["PostId"],
+            "id": `${ulId}-ul`,
             "class": "dealershipSubmissions row"
         });
         let operationsRow = $("<td class='btn-group-vertical'>");
@@ -494,25 +505,15 @@ function appendPostToList(postNode) {
         postSection[0].appendChild(post[0]);
         $(`#${groupId} > #${dealershipId}`)[0].appendChild(postSection[0]);
     } 
-    // else {
-    //     console.log('appendPostToList: postNode', postNode);
-    //     var postSection = $("<ul>"); 
-    //     postSection.attr({
-    //         "id": postNode["PostId"],
-    //         "class": "postSection"
-    //     });
-    //     var postsListHeader = $("<h4>"); 
-    //     postsListHeader.text(postNode.title);
-    //     postSection[0].appendChild(postsListHeader[0]);
-    //     $("body")[0].appendChild(postSection[0]);
-    // }
+    
+    
 }
 
 
 function buildPostItem(postNode) {
     var postListItem = $("<li>"); 
     postListItem.attr({
-        "id": postNode["PostId"],
+        "id": trimWhiteSpaceAndConvertSpaceToDash(postNode["PostId"]),
         "class": "postItem row"
     });
     var postTitle = $("<h4>"); // Create post title
