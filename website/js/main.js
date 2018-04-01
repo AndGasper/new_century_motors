@@ -456,7 +456,7 @@ function sortPostsByGroupAndDealership(posts) {
 function appendPostsToPage(postNodes) {
     for (var i = 0; i < postNodes.length; i++) {
         var postsList = appendPostToList(postNodes[i]); 
-        if (typeof postNodes[i]["Post"]["replies"] !== undefined) {
+        if (postNodes[i]["Post"]["replies"]) {
             var postListItem = $("<li>"); 
             var liId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"])
             postListItem.attr({
@@ -465,6 +465,7 @@ function appendPostsToPage(postNodes) {
             });
             var replyTitle = $("<h4>"); // Create post title
             replyTitle.addClass("postTitle");
+            console.log('postNode keys', Object.keys(postNodes[i]["Post"]["replies"][0]));
             replyTitle.text(postNodes[i]["Post"]["replies"][0].title);
             var replyBody = $("<span class='postBody'>");
             var replyBodyText = $("<p>").text(postNodes[i]["Post"]["replies"][0].body);
@@ -476,7 +477,7 @@ function appendPostsToPage(postNodes) {
             var opSection = document.getElementById(originalPostId);
             opSection.appendChild(postListItem[0]);
             console.log('opSection', opSection);
-            // $(`#${originalPostId}`)[0].appendChild(postListItem[0]); 
+            opSection.appendChild(postListItem[0]); 
         }
     }
 }
