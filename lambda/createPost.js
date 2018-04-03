@@ -134,7 +134,7 @@ exports.handler = (event, context, callback) => {
         }
 
         function recordReply(reply) {
-            console.log('recordReply reply', reply);
+            // console.log('recordReply reply', reply);
             var params = {
                 TableName: "Posts",
                 Key: {
@@ -145,9 +145,9 @@ exports.handler = (event, context, callback) => {
                     ":attrValue": [reply]
                 }
             };
-            console.log('params', params); 
+            // console.log('params', params); 
             return ddb.update(params, function(error, result) {
-                console.log('result', result);
+                // console.log('result', result);
                 if (error) {
                     console.log('error', error);
                     responseBody.data.push('Error replying');

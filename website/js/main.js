@@ -265,6 +265,7 @@ function replyToPost(originalPostId) {
     }
     if (replyInfo.title !== '' && replyInfo.body !== '') {
         if (replyInfo.title.length > 2 && replyInfo.body.length < 10000) {
+            console.log('replyInfo', replyInfo);
             sendReplyToPost(replyInfo);
         }
     }
@@ -458,26 +459,34 @@ function appendPostsToPage(postNodes) {
     for (var i = 0; i < postNodes.length; i++) {
         var postsList = appendPostToList(postNodes[i]); 
         if (postNodes[i]["Post"]["replies"].length !== 0) {
-            var postListItem = $("<li>"); 
-            var liId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"])
-            postListItem.attr({
-                "id": `${liId}-reply`,
-                "class": "postItem row"
+            postNodes[i]["Post"]["replies"].map(function(item, index) {
+                console.log('index inside of map', index);
+                // Dealing with a bug in my lambda function that inserts the replies twice.
+                if (index % 2 === 0) {
+                    var postListItem = $("<li>"); 
+                    var liId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"])
+                    postListItem.attr({
+                        "id": `${liId}-reply`,
+                        "class": "postItem row"
+                    });
+                    var replyTitle = $("<h4>"); // Create post title
+                    replyTitle.addClass("postTitle");
+                    replyTitle.text(item.title);
+                    var replyBody = $("<span class='postBody'>");
+                    var replyBodyText = $("<p>").text(item.body);
+                    replyBody[0].appendChild(replyBodyText[0]);
+                    postListItem[0].appendChild(replyTitle[0]); // <li><h3></h3><span><p></p></span></li>
+                    postListItem[0].appendChild(replyBody[0]);
+                    console.log('postListItem', postListItem);
+                    var originalPostId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"]);
+                    var opSection = document.getElementById(originalPostId);
+                    opSection.appendChild(postListItem[0]);
+                    console.log('opSection', opSection);
+                    opSection.appendChild(postListItem[0]); 
+                }
+                
             });
-            var replyTitle = $("<h4>"); // Create post title
-            replyTitle.addClass("postTitle");
-            replyTitle.text(postNodes[i]["Post"]["replies"][0].title);
-            var replyBody = $("<span class='postBody'>");
-            var replyBodyText = $("<p>").text(postNodes[i]["Post"]["replies"][0].body);
-            replyBody[0].appendChild(replyBodyText[0]);
-            postListItem[0].appendChild(replyTitle[0]); // <li><h3></h3><span><p></p></span></li>
-            postListItem[0].appendChild(replyBody[0]);
-            console.log('postListItem', postListItem);
-            var originalPostId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"]);
-            var opSection = document.getElementById(originalPostId);
-            opSection.appendChild(postListItem[0]);
-            console.log('opSection', opSection);
-            opSection.appendChild(postListItem[0]); 
+            
         }
     }
 }
