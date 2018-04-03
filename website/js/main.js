@@ -332,7 +332,7 @@ function createPost(post) {
         },
         data: JSON.stringify(post),
         contentType: 'application/json',
-        success: completeRequest,
+        success: getDataFromServer,
         error: function ajaxError(jqXHR, textStatus, errorThrown) {
             console.error('Error creating post: ', textStatus, ', Details: ', errorThrown);
             console.error('Response: ', jqXHR.responseText);
