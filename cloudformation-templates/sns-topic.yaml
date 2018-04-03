@@ -1,12 +1,34 @@
-PostsSubscription:
-  Type: AWS::SNS::Subscription
-  Properties:
-    Endpoint: email@mail.com
-    Protocol: email
+---
+  AWSTemplateFormatVersion: "2010-09-09"
 
-PostsTopic:
-  Type: AWS::SNS::Topic
-  Properties:
-    DisplayName: Posts Alert
-    Subscription: !Ref PostsSubscription
-    TopicName: UserPostTopic
+  Description:
+    Creates the Lambda functions, DynamoDB table, and API Gateway endpoints for the web application
+  Resources:
+    SESNotifyPolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: "NotificationPolicy"
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            -
+              Effect: "Allow"
+              Action: 
+                - "ses:SendEmail"
+              Resource: "*"
+      Role: !Ref SESNotifyLambdaPolicy
+
+    SESNotifyLambdaPolicy:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: SESNotifyLambda
+        AssumeRolePolicyDocument: 
+        Version: 2012-10-17
+        Statement: 
+          -
+            Effect: Allow
+            Principal: 
+              Service: 
+                - lambda.amazonaws.com
+                Action: 
+                - "sts:AssumeRole"

@@ -3,6 +3,8 @@ const randomBytes = require('crypto').randomBytes;
 const AWS = require('aws-sdk');
   
 const ddb = new AWS.DynamoDB.DocumentClient();
+const sesClient = new AWS.SES();
+const sesConfirmedAddress = "gasperandres1@gmail.com" // pls no spam
   
 exports.handler = (event, context, callback) => {
     // if (!event.requestContext.authorizer) {
@@ -16,7 +18,23 @@ exports.handler = (event, context, callback) => {
     // This includes the username as well as other attributes.
     // const username = event.requestContext.authorizer.claims['cognito:username'];
     console.log('event.requestContext', event.requestContext);
-  
+
+    var postNotificationEmailParams = {
+        Destination: {
+            ToAddresses: [sesConfirmedAddress]
+        },
+        Message: {
+            Body: {
+                Text: {
+                    Data: 'Hello world, etc.'
+                }
+            }, 
+            Subject: 'Someone has made a post!'
+        },
+        Source: sesConfirmedAddress,
+        ReplyToAddresses: [sesConfirmedAddress]
+    };
+
     // The body field of the event in a proxy integration is a raw string.
     var requestBody = JSON.parse(event.body);
     var timeStamp = new Date().toISOString();
@@ -106,6 +124,15 @@ exports.handler = (event, context, callback) => {
             recordReply(message).then(() => {
                 successResponse.body = JSON.stringify(successResponse.body);
                 console.log('successResponse.body.responseBody inside of then', successResponse.body);
+                // Call the ses client to send the email
+                var sendEmailPromise = sesClient.sendEmail(postNotificationEmailParams).promise();
+                sendEmailPromise.then(function(result) {
+                    console.log('sendEmailPromise result', result);
+                    callback(null, null);
+                }).catch(function(error) {
+                    console.log('error in email', error);
+                    callback(null, null);
+                });
                 callback(null, successResponse);
             }).catch((err) => {
                 console.error(err);
@@ -134,7 +161,7 @@ exports.handler = (event, context, callback) => {
         }
 
         function recordReply(reply) {
-            // console.log('recordReply reply', reply);
+            console.log('recordReply reply', reply);
             var params = {
                 TableName: "Posts",
                 Key: {
@@ -145,9 +172,9 @@ exports.handler = (event, context, callback) => {
                     ":attrValue": [reply]
                 }
             };
-            // console.log('params', params); 
+            console.log('params', params); 
             return ddb.update(params, function(error, result) {
-                // console.log('result', result);
+                console.log('result', result);
                 if (error) {
                     console.log('error', error);
                     responseBody.data.push('Error replying');

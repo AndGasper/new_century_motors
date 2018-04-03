@@ -72,12 +72,19 @@
               Version: 2012-10-17
               Statement: 
                 - 
+                  Sid: PutPostStatement
                   Effect: Allow
                   Action: 
                     - dynamodb:PutItem
                     - dynamodb:Scan
                     - dynamodb:UpdateItem
                   Resource: !GetAtt PostsTable.Arn
+                -
+                  Sid: EmailNotificationStatement
+                  Effect: Allow
+                  Action:
+                    - "ses:SendEmail"
+                  Resource: "*"
   
     GetPostsExecutionRole:
       Type: AWS::IAM::Role
