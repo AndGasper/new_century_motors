@@ -456,7 +456,7 @@ function sortPostsByGroupAndDealership(posts) {
 function appendPostsToPage(postNodes) {
     for (var i = 0; i < postNodes.length; i++) {
         var postsList = appendPostToList(postNodes[i]); 
-        if (postNodes[i]["Post"]["replies"]) {
+        if (postNodes[i]["Post"]["replies"].length !== 0) {
             var postListItem = $("<li>"); 
             var liId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"])
             postListItem.attr({

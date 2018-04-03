@@ -29,13 +29,15 @@ exports.handler = (event, context, callback) => {
             body: requestBody.body,
             dealership: 'reply',
             group: 'reply',
+            replies: [],
         };
     } else {
         var message = {
             title: requestBody.submissionTitle,
             body: requestBody.submissionBody,
             dealership: requestBody.dealership,
-            group: requestBody.group
+            group: requestBody.group,
+            replies: []
         };
            
     }
@@ -131,12 +133,12 @@ exports.handler = (event, context, callback) => {
                 Key: {
                     "PostId": reply.originalPost
                 },
-                UpdateExpression: "SET Post.replies = :r",
+                UpdateExpression: "SET Post.replies = list_append(Post.replies, :attrValue)",
                 ExpressionAttributeValues: {
-                    ":r": [reply]
-                },
-                ReturnValues: "UPDATED_NEW"  
+                    ":attrValue": [reply]
+                }
             };
+            console.log('params', params); 
             return ddb.update(params, function(error, result) {
                 console.log('result', result);
                 if (error) {
