@@ -257,6 +257,7 @@ function replyToPost(originalPostId) {
         title: $("#replyTitle").val(),
         body: $("#replyBody").val(),
     };
+    console.log('replyInfo', replyInfo);
     if (replyInfo.title === '' && replyInfo.body === '') {
         $("#replyTitleDiv").addClass('has-warning');
         $("#replyBodyDiv").addClass('has-warning')

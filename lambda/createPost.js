@@ -86,11 +86,18 @@ exports.handler = (event, context, callback) => {
         postId = postId + "." + partitionID.toString(); // postId.partitionId
         return postId;
     }
+    function trimWhiteSpaceAndConvertSpaceToDash(stringWithSpaces) {
+    
+        var editedString = stringWithSpaces.trim();
+        editedString = stringWithSpaces.replace(/\s/g, '-');
+        return editedString;
+    }
     if (validateMessage(message).length === 0) {
         // console.log('validate message 0 errors');
         // console.log(postId);
         // console.log('successResponse', successResponse); 
         var postId = createUniquePostIdFromMessage(message, timeStamp); // Update postId
+        postId = trimWhiteSpaceAndConvertSpaceToDash(postId);
         successResponse.body.message["PostId"] = postId;
         console.log('successResponse.body.message.postId before of then', successResponse.body.message["PostId"]);
         // Intentional duplicate code blocks for then statement just to verify the replies work
