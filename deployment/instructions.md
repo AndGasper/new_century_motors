@@ -12,3 +12,9 @@
 8. Enable CORS for the API through the API Gateway UI
 
 
+# Manual steps
+## AWS SES
+- Manually confirm an email address to send out from. Need to configure automatic update of the address, so the sender is not my personal address. 
+
+
+
