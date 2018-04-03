@@ -465,7 +465,6 @@ function appendPostsToPage(postNodes) {
             });
             var replyTitle = $("<h4>"); // Create post title
             replyTitle.addClass("postTitle");
-            console.log('postNode keys', Object.keys(postNodes[i]["Post"]["replies"][0]));
             replyTitle.text(postNodes[i]["Post"]["replies"][0].title);
             var replyBody = $("<span class='postBody'>");
             var replyBodyText = $("<p>").text(postNodes[i]["Post"]["replies"][0].body);

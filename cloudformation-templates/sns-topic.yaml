@@ -1,0 +1,12 @@
+PostsSubscription:
+  Type: AWS::SNS::Subscription
+  Properties:
+    Endpoint: email@mail.com
+    Protocol: email
+
+PostsTopic:
+  Type: AWS::SNS::Topic
+  Properties:
+    DisplayName: Posts Alert
+    Subscription: !Ref PostsSubscription
+    TopicName: UserPostTopic
