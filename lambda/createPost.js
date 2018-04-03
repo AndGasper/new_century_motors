@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
   
 const ddb = new AWS.DynamoDB.DocumentClient();
 const sesClient = new AWS.SES();
-const sesConfirmedAddress = "gasperandres1@gmail.com" // pls no spam
+const sesConfirmedAddress = "<gasperandres1@gmail.com>" // pls no spam
   
 exports.handler = (event, context, callback) => {
     // if (!event.requestContext.authorizer) {
@@ -19,21 +19,8 @@ exports.handler = (event, context, callback) => {
     // const username = event.requestContext.authorizer.claims['cognito:username'];
     console.log('event.requestContext', event.requestContext);
 
-    var postNotificationEmailParams = {
-        Destination: {
-            ToAddresses: [sesConfirmedAddress]
-        },
-        Message: {
-            Body: {
-                Text: {
-                    Data: 'Hello world, etc.'
-                }
-            }, 
-            Subject: 'Someone has made a post!'
-        },
-        Source: sesConfirmedAddress,
-        ReplyToAddresses: [sesConfirmedAddress]
-    };
+    
+    console.log('sesClient:', sesClient);
 
     // The body field of the event in a proxy integration is a raw string.
     var requestBody = JSON.parse(event.body);
@@ -59,6 +46,23 @@ exports.handler = (event, context, callback) => {
         };
            
     }
+    var postNotificationEmailParams = {
+        Destination: {
+            ToAddresses: [sesConfirmedAddress]
+        },
+        Message: {
+            Body: {
+                Text: {
+                    Data: message.title
+                }
+            }, 
+            Subject: {
+                Data: 'Someone has posted'
+            },
+        },
+        Source: sesConfirmedAddress,
+        ReplyToAddresses: [sesConfirmedAddress]
+    };
     // Start with a default PostId of 0
     var responseBody = {
         "message": {
@@ -124,6 +128,15 @@ exports.handler = (event, context, callback) => {
             recordReply(message).then(() => {
                 successResponse.body = JSON.stringify(successResponse.body);
                 console.log('successResponse.body.responseBody inside of then', successResponse.body);
+                
+                callback(null, successResponse);
+            }).catch((err) => {
+                console.error(err);
+                errorResponse(err.message, context.awsRequestId, callback);
+            });
+        } else {
+            recordPost(postId, message).then(() => {
+                successResponse.body = JSON.stringify(successResponse.body);
                 // Call the ses client to send the email
                 var sendEmailPromise = sesClient.sendEmail(postNotificationEmailParams).promise();
                 sendEmailPromise.then(function(result) {
@@ -133,14 +146,6 @@ exports.handler = (event, context, callback) => {
                     console.log('error in email', error);
                     callback(null, null);
                 });
-                callback(null, successResponse);
-            }).catch((err) => {
-                console.error(err);
-                errorResponse(err.message, context.awsRequestId, callback);
-            });
-        } else {
-            recordPost(postId, message).then(() => {
-                successResponse.body = JSON.stringify(successResponse.body);
                 console.log('successResponse.body.responseBody inside of then', successResponse.body);
                 callback(null, successResponse);
             }).catch((err) => {
