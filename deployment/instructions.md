@@ -17,4 +17,3 @@
 - Manually confirm an email address to send out from. Need to configure automatic update of the address, so the sender is not my personal address. 
 
 
-

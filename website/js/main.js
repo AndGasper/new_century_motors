@@ -504,21 +504,25 @@ function appendPostToList(postNode) {
             "id": `${ulId}-ul`,
             "class": "dealershipSubmissions row"
         });
-        let operationsRow = $("<td class='btn-group-vertical'>");
-        operationsRow.css("border-top", "none");
-        let replyButton = $("<button type='button' class='btn btn-outline-primary' data-toggle='modal' data-target='replyToPostModal'>");
-        replyButton.css("marginRight", "1em");
-        replyButton.text("Reply");
-        replyButton.on("click", replyToPostModal);
-        operationsRow.append(replyButton);
-        post[0].appendChild(operationsRow[0]);
+        // Append reply if auth'd
+        if (window.MessageBoardApi.authToken.then(function(tokenValue) {
+            if (tokenValue) {
+                let operationsRow = $("<td class='btn-group-vertical'>");
+                operationsRow.css("border-top", "none");
+                let replyButton = $("<button type='button' class='btn btn-outline-primary' data-toggle='modal' data-target='replyToPostModal'>");
+                replyButton.css("marginRight", "1em");
+                replyButton.text("Reply");
+                replyButton.on("click", replyToPostModal);
+                operationsRow.append(replyButton);
+                post[0].appendChild(operationsRow[0]);
+            }    
+        }));
         postSection[0].appendChild(post[0]);
         $(`#${groupId} > #${dealershipId}`)[0].appendChild(postSection[0]);
     } 
     
     
 }
-
 
 function buildPostItem(postNode) {
     var postListItem = $("<li>"); 
