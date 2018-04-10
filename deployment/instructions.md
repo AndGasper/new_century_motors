@@ -21,4 +21,26 @@
 - Navigate to the AWS Cognito Pool
 - Confirm the user on the back-end 
 
+## CC'ing a user
+- Current iteration requires the sender and the CC email address to be verified. 
 
+```
+var postNotificationEmailParams = {
+        Destination: {
+            ToAddresses: [sesConfirmedAddress],
+            CcAddresses: [otherSesConfirmedEmailAddress]
+        },
+        Message: {
+            Body: {
+                Text: {
+                    Data: message.title
+                }
+            }, 
+            Subject: {
+                Data: 'Someone has posted'
+            },
+        },
+        Source: sesConfirmedAddress,
+        ReplyToAddresses: [sesConfirmedAddress]
+    };
+```
