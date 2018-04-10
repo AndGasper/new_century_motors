@@ -134,7 +134,7 @@ function replyToPostModal() {
 
     // var postInfo = posts_array[$(this).parent().parent().index()];
     var postInfo = $(this).parent().parent()["0"].id;
-    console.log('postInfo', postInfo);
+    // console.log('postInfo', postInfo);
 
 
     // Modal form
@@ -257,7 +257,7 @@ function replyToPost(originalPostId) {
         title: $("#replyTitle").val(),
         body: $("#replyBody").val(),
     };
-    console.log('replyInfo', replyInfo);
+    // console.log('replyInfo', replyInfo);
     if (replyInfo.title === '' && replyInfo.body === '') {
         $("#replyTitleDiv").addClass('has-warning');
         $("#replyBodyDiv").addClass('has-warning')
@@ -265,7 +265,7 @@ function replyToPost(originalPostId) {
     }
     if (replyInfo.title !== '' && replyInfo.body !== '') {
         if (replyInfo.title.length > 2 && replyInfo.body.length < 10000) {
-            console.log('replyInfo', replyInfo);
+            // console.log('replyInfo', replyInfo);
             sendReplyToPost(replyInfo);
         }
     }
@@ -301,7 +301,7 @@ function getDataFromServer() {
 function sendReplyToPost(replyPost) {
     let pendingAlert = $("<div class='alert alert-warning' style='text-align: center'>").append('<strong>Submitting post</strong>');
     $("body").append(pendingAlert);
-    console.log("sendReplyToPost", replyPost);
+    // console.log("sendReplyToPost", replyPost);
     $.ajax({
         method: 'POST',
         url: _config.api.invokeUrl + '/posts',
@@ -350,13 +350,13 @@ function handleReply(result) {
 }
 
 function completeRequest(result) {
-    console.log('Response received from API: ', result);
+    // console.log('Response received from API: ', result);
     $('.alert').remove(); // Remove the submitting alert.
     // Assume result.data is *JUST* the posts for a given dealership 
     if (result.data) {
         $('.posts-list-container').children().remove();
         var sortedPosts = sortPostsByGroupAndDealership(result.data); // Pull the unique groups from the messages
-        console.log("sortedPosts", sortedPosts);
+        // console.log("sortedPosts", sortedPosts);
         var groups = Object.keys(sortedPosts);
         for (var i = 0; i < groups.length; i++) {
             appendGroupToPage(groups[i]);
@@ -460,7 +460,7 @@ function appendPostsToPage(postNodes) {
         var postsList = appendPostToList(postNodes[i]); 
         if (postNodes[i]["Post"]["replies"].length !== 0) {
             postNodes[i]["Post"]["replies"].map(function(item, index) {
-                console.log('index inside of map', index);
+                // console.log('index inside of map', index);
                 // Dealing with a bug in my lambda function that inserts the replies twice.
                 if (index % 2 === 0) {
                     var postListItem = $("<li>"); 
@@ -477,11 +477,11 @@ function appendPostsToPage(postNodes) {
                     replyBody[0].appendChild(replyBodyText[0]);
                     postListItem[0].appendChild(replyTitle[0]); // <li><h3></h3><span><p></p></span></li>
                     postListItem[0].appendChild(replyBody[0]);
-                    console.log('postListItem', postListItem);
+                    // console.log('postListItem', postListItem);
                     var originalPostId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"]);
                     var opSection = document.getElementById(originalPostId);
                     opSection.appendChild(postListItem[0]);
-                    console.log('opSection', opSection);
+                    // console.log('opSection', opSection);
                     opSection.appendChild(postListItem[0]); 
                 }
                 
@@ -533,7 +533,7 @@ function buildPostItem(postNode) {
     var postTitle = $("<h4>"); // Create post title
     postTitle.addClass("postTitle");
     postTitle.text(postNode["Post"].title);
-    console.log('postTitle', postTitle);
+    // console.log('postTitle', postTitle);
     
     var postBody = $("<span class='postBody'>");
     var postBodyText = $("<p>").text(postNode["Post"].body);

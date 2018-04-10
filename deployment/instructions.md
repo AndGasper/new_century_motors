@@ -16,4 +16,9 @@
 ## AWS SES
 - Manually confirm an email address to send out from. Need to configure automatic update of the address, so the sender is not my personal address. 
 
+# Confirming a user
+- Assumes the user has registered through the site.
+- Navigate to the AWS Cognito Pool
+- Confirm the user on the back-end 
+
 
