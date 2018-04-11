@@ -2,9 +2,23 @@ const AWS = require('aws-sdk');
 const ddb = new AWS.DynamoDB.DocumentClient();
             
 exports.handler = (event, context, callback) => {
-  // console.log('GetPost event:', event);
-  // console.log('GetPost context', context);
-
+  
+  if (event.requestContext) {
+    if (event.requestContext.path === '/posts/{postId}') {
+      const postId = event.pathParameters.postId;
+      getPost(postId).then(() => {
+        // console.log('getPosts then block');
+        successResponse.body = JSON.stringify(successResponse.body);
+        console.log('successResponse', successResponse);
+        callback(null,successResponse);
+      }).catch((err) => {
+        console.log('catch error block');
+        console.error(err);
+        errorResponse(err.message, context.awsRequestId, callback);
+      });
+    }
+}
+    
   var params = {
     TableName: 'Posts'
   };
@@ -20,6 +34,24 @@ exports.handler = (event, context, callback) => {
     },
     "body": responseBody,
 };
+
+function getPost(postId) {
+  console.log('postId inside of getPost', postId);
+  const getPostParams = {
+    TableName: 'Posts', 
+    Key: {
+      "PostId": postId
+    }
+  };
+  return ddb.get(getPostParams, function(error, data) {
+    if (error) {
+      console.log('error on getItem', error);
+      responseBody.data.push('Error getting item');
+    } else {
+      responseBody.data.push(data);
+    }
+  }).promise();
+}
 
 function getPosts() {
   return ddb.scan(params, function(error, results) {

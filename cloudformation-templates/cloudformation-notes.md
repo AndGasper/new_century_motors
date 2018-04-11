@@ -55,3 +55,11 @@ After setting the GetPosts Lambda execution to use the same permissions as the C
 
 # [MANUALLY ENABLE CORS FOR GET REQUEST](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html)
 - Unable to figure out how to configure headers in CloudFormation tempalte ApiGateway for GET requests to map, so manually enable through the AWS Console.
+
+
+```
+Add Access-Control-Allow-Headers, Access-Control-Allow-Methods, Access-Control-Allow-Origin Method Response Headers to OPTIONS method
+Add Access-Control-Allow-Headers, Access-Control-Allow-Methods, Access-Control-Allow-Origin Integration Response Header Mappings to OPTIONS method
+Add Access-Control-Allow-Origin Method Response Header to GET method
+Add Access-Control-Allow-Origin Integration Response Header Mapping to GET method
+```
