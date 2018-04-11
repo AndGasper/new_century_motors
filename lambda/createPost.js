@@ -12,15 +12,7 @@ exports.handler = (event, context, callback) => {
     //     return;
     // }
     
-    // console.log('event', event);
-    // Because we're using a Cognito User Pools authorizer, all of the claims
-    // included in the authentication token are provided in the request context.
-    // This includes the username as well as other attributes.
-    // const username = event.requestContext.authorizer.claims['cognito:username'];
-    console.log('event.requestContext', event.requestContext);
-
     
-    console.log('sesClient:', sesClient);
 
     // The body field of the event in a proxy integration is a raw string.
     var requestBody = JSON.parse(event.body);
@@ -57,7 +49,7 @@ exports.handler = (event, context, callback) => {
                 }
             }, 
             Subject: {
-                Data: 'Someone has posted'
+                Data: 'Someone has posted:' + message.title
             },
         },
         Source: sesConfirmedAddress,
@@ -138,6 +130,10 @@ exports.handler = (event, context, callback) => {
             recordPost(postId, message).then(() => {
                 successResponse.body = JSON.stringify(successResponse.body);
                 // Call the ses client to send the email
+                // ASSUMPTION: If we're inside the recordPost success, then the postId is the same as what was inserted;
+                // At the time of writing putItem does not return the inserted item.
+                // Update the email to contain the email 
+                postNotificationEmailParams.Message.Body.Text.Data = 'http://newcenturymotors-dev.s3-website.us-east-1.amazonaws.com/#'+postId; 
                 var sendEmailPromise = sesClient.sendEmail(postNotificationEmailParams).promise();
                 sendEmailPromise.then(function(result) {
                     console.log('sendEmailPromise result', result);
