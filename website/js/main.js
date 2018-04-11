@@ -561,6 +561,8 @@ function toggleFocusBadge(postId) {
     badge.text('New Post');
     var post = document.getElementById(postId);
     $(post)[0].append($(badge)[0]);
+    // Scroll into view
+    $(window).scrollTo(post);
 }
 
 
