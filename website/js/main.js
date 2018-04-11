@@ -368,6 +368,10 @@ function completeRequest(result) {
             }
 
         }
+        if (window.location.hash) {
+            const postId = window.location.hash.slice(1);
+            toggleFocusBadge(postId);
+        }
         return;
     }
      else {
@@ -545,12 +549,27 @@ function buildPostItem(postNode) {
 }
 
 
+/**
+ * @name toggleFocusBadge
+ * @description Takes in a postId for a valid DOM element and sets a bootstrap badge
+ * @param {@string} postId 
+ */
+function toggleFocusBadge(postId) {
+    var badge = $('<span>').attr({
+        'class': 'badge badge-success'
+    });
+    badge.text('New Post');
+    var post = document.getElementById(postId);
+    $(post)[0].append($(badge)[0]);
+}
+
+
 // [{PostId:<String>, Post: {title: String, body: String, dealership: String, group: String}}]
 $(document).ready(function(){
     $('#submitComment').click(addClicked);
     $('#getDataFromServer').click(getDataFromServer);
+    getDataFromServer();
+    
 });
 
 }(jQuery));
-
-
