@@ -5,6 +5,7 @@ const AWS = require('aws-sdk');
 const ddb = new AWS.DynamoDB.DocumentClient();
 const sesClient = new AWS.SES();
 const sesConfirmedAddress = "<gasperandres1@gmail.com>" // pls no spam
+const otherConfirmedSesAddress = ['<emailAddress1@mail.com>', '<emailAddress2@mail.com>'];
   
 exports.handler = (event, context, callback) => {
     // if (!event.requestContext.authorizer) {
@@ -40,7 +41,8 @@ exports.handler = (event, context, callback) => {
     }
     var postNotificationEmailParams = {
         Destination: {
-            ToAddresses: [sesConfirmedAddress]
+            ToAddresses: [sesConfirmedAddress],
+            CcAddresses: otherConfirmedSesAddress
         },
         Message: {
             Body: {
