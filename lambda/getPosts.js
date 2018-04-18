@@ -53,18 +53,45 @@ function getPost(postId) {
   }).promise();
 }
 
+// Version control at its finest...
+// function getPosts() {
+//   return ddb.scan(params, function(error, results) {
+//     if (error) {
+//       console.log('error', error);
+//       responseBody.data.push('Error');
+//     } else {
+//       // console.log('Query succeeded. results', results);
+//       results.Items.forEach(function(item) {
+//         responseBody.data.push(item);
+//       });
+//     }
+//   }).promise();
+// }
+
 function getPosts() {
-  return ddb.scan(params, function(error, results) {
-    if (error) {
+  return dbb.scan(params, scanCallback).promise();
+}
+
+function scanCallback(error, results) {
+  if (error) {
       console.log('error', error);
       responseBody.data.push('Error');
-    } else {
-      // console.log('Query succeeded. results', results);
-      results.Items.forEach(function(item) {
-        responseBody.data.push(item);
-      });
-    }
-  }).promise();
+  }
+  else {
+    // console.log('Query succeeded. results', results);
+    results.Items.forEach(function(item) {
+      responseBody.data.push(item);
+    });
+  }
+  // Pagination 
+  if (!typeof results.LastEvaluatedKey) {
+      // Initiate the scan query with the last returned key
+      params.ExclusiveStartKey = results.LastEvaluatedKey;
+      ddb.scan(params, scanCallback);
+  }
+}
+
+function getPostsPaginated() {
 }
 
 function errorResponse(errorMessage, awsRequestId, callback) {
