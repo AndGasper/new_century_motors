@@ -33,20 +33,10 @@
   
   Resources:
     PostsTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: Posts
-        AttributeDefinitions:
-          -
-            AttributeName: PostId
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: PostId
-            KeyType: HASH
-        ProvisionedThroughput: 
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+      Fn::Transform:
+        Name: AWS::Include
+        Parameters:
+          Location: s3://cloudformation-templates-modular/dynamodb/dynamodb-config.yaml
   
     CreatePostExecutionRole:
       Type: AWS::IAM::Role
@@ -119,7 +109,7 @@
     CloudWatchRole: 
       Type: "AWS::IAM::Role"
       Properties: 
-        RoleName: ApiGatewayLogsRole
+        RoleName: ApiGatewayLogsRoleModTest
         AssumeRolePolicyDocument: 
           Version: 2012-10-17
           Statement: 
@@ -577,7 +567,7 @@
                 cfnresponse.send(event, context, status, {}, new_physical_id)
   
   Outputs:
-    MessageBoardApiInvokeUrl:
+    MessageBoardApiInvokeUrl2:
       Description: URL for the deployed message board API
       Value:
         Fn::Join:
@@ -588,7 +578,7 @@
             - !Ref AWS::Region
             - ".amazonaws.com/prod"
       Export:
-        Name: MessageBoardApiUrl
+        Name: MessageBoardApiUrl2
 
     CloudWatchLogGroupName:
       Description: Name of cloud watch logs group
