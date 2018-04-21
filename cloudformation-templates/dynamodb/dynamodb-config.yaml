@@ -1,14 +1,65 @@
-Type: AWS::DynamoDB::Table
-Properties:
-  TableName: Posts
-  AttributeDefinitions:
+ForumTable: 
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: Forum
+    AttributeDefinitions:
     -
-      AttributeName: PostId
+      AttributeName: Name
       AttributeType: S
-  KeySchema:
     -
-      AttributeName: PostId
+      AttributeName: Group
+      AttributeType: S
+    KeySchema:
+    -
+      AttributeName: Name
       KeyType: HASH
-  ProvisionedThroughput: 
-    ReadCapacityUnits: 5
-    WriteCapacityUnits: 5
+    -
+      AttributeName: Group
+      KeyType: RANGE
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
+
+ThreadTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: Thread
+    AttributeDefinitions:
+    -
+      AttributeName: ForumName
+      AttributeType: S
+    - 
+      AttributeName: Subject
+      AttributeType: S
+    KeySchema:
+    -
+      AttributeName: ForumName
+      KeyType: HASH
+    -
+      AttributeName: Subject
+      KeyType: RANGE
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
+
+ReplyTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: Reply
+    AttributeDefinitions:
+    -
+      AttributeName: Id
+      AttributeType: S
+    -
+      AttributeName: Subject
+      AttributeType: S
+    KeySchema:
+    -
+      AttributeName: Id
+      KeyType: HASH
+    -
+      AttributeName: Subject
+      KeyType: RANGE
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5

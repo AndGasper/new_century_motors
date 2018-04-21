@@ -21,13 +21,13 @@
         }
     ]
 }
-
+// Category = Group; Name = Dealership 
 {
     "Forum": [
         {
             "PutRequest": {
                 "Item": {
-                    "Dealership": {"S": "Dealership 1"},
+                    "Name": {"S": "Dealership 1"},
                     "Group": {"S": "Group A"}
                 }
             }

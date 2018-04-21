@@ -32,16 +32,16 @@
           default: "Website Bucket Name"
   
   Resources:
-    PostsTable:
-      Fn::Transform:
-        Name: AWS::Include
-        Parameters:
-          Location: s3://cloudformation-templates-modular/dynamodb/dynamodb-config.yaml
+    # Datbase Include 
+    Fn::Transform:
+      Name: AWS::Include
+      Parameters:
+        Location: s3://cloudformation-templates-modular/dynamodb/dynamodb-config.yaml
   
     CreatePostExecutionRole:
       Type: AWS::IAM::Role
       Properties: 
-        RoleName: CreatePostLambda
+        RoleName: CreatePostLambdaTest
         AssumeRolePolicyDocument: 
           Version: 2012-10-17
           Statement: 
@@ -68,7 +68,7 @@
                     - dynamodb:PutItem
                     - dynamodb:Scan
                     - dynamodb:UpdateItem
-                  Resource: !GetAtt PostsTable.Arn
+                  Resource: !GetAtt ThreadTable.Arn
                 -
                   Sid: EmailNotificationStatement
                   Effect: Allow
@@ -79,7 +79,7 @@
     GetPostsExecutionRole:
       Type: AWS::IAM::Role
       Properties: 
-        RoleName: GetPostsLambda
+        RoleName: GetPostsLambdaTest
         AssumeRolePolicyDocument: 
           Version: 2012-10-17
           Statement: 
@@ -104,7 +104,7 @@
                   Action: 
                     - dynamodb:GetItem
                     - dynamodb:Scan
-                  Resource: !GetAtt PostsTable.Arn
+                  Resource: !GetAtt ThreadTable.Arn
   
     CloudWatchRole: 
       Type: "AWS::IAM::Role"
@@ -169,6 +169,8 @@
                   Sid: ConfigBucketWriteAccess
                   Effect: Allow
                   Action:
+                    - "s3:ListBucket"
+                    - "s3:GetObject"
                     - "s3:PutObject"
                     - "s3:PutObjectAcl"
                     - "s3:PutObjectVersionAcl"
@@ -248,7 +250,7 @@
     GetPostsFunction:
       Type: AWS::Lambda::Function
       Properties:
-        FunctionName: GetPosts
+        FunctionName: GetPostsTest
         Runtime: nodejs6.10
         Role: !GetAtt GetPostsExecutionRole.Arn
         Timeout: 5
@@ -261,7 +263,7 @@
     CreatePostFunction:
       Type: AWS::Lambda::Function
       Properties:
-        FunctionName: CreatePost
+        FunctionName: CreatePostTest
         Runtime: nodejs6.10
         Role: !GetAtt CreatePostExecutionRole.Arn
         Timeout: 5
@@ -494,7 +496,7 @@
     MessageBoardApiLogPermissions:
       Type: AWS::Logs::LogGroup
       Properties:
-        LogGroupName: ApiGatewayLogs
+        LogGroupName: ApiGatewayLogsModTest
         RetentionInDays: 365
 
     UpdateApiConfig:
