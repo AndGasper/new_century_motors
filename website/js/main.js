@@ -363,11 +363,24 @@ function completeRequest(result) {
             var dealerships = Object.keys(sortedPosts[groups[i]]);
             for (var j = 0; j < dealerships.length; j++) {
                 appendDealershipToGroup(dealerships[j], groups[i]); 
+                // Pagination logic
                 var dealershipPosts = sortedPosts[groups[i]][dealerships[j]]["posts"];
-                appendPostsToPage(dealershipPosts); // append the posts to the page
+                var totalPostsPerPage = 3;
+                var totalPosts = dealershipPosts.length;
+                var totalPages = calculateTotalNumberOfPagesPerDealership(totalPosts, totalPostsPerPage); // The numbner of posts per page is set inside of here
+                var pageSortedPosts = paginatePosts(dealershipPosts, totalPostsPerPage);
+                console.log('pageSortedPosts', pageSortedPosts);
+                // for (k = 0; k < totalPosts; k += totalPostsPerPage) {
+                //     var postsToAppendToPage = dealershipPosts.slice(k, k+totalPostsPerPage); // Only pass in a slice of the total posts per page
+                //     var pageOfPosts = appendPostsToPage(postsToAppendToPage);
+                //     appendPageOfPostsToDealership(pageOfPosts);
+                // }
+                appendPostsToPage(dealershipPosts);
+                buildPaginationNav(totalPages); 
             }
 
         }
+        // For focusing the page to the post when linked to from email. This will be problematic for pagination
         if (window.location.hash) {
             const postId = window.location.hash.slice(1);
             toggleFocusBadge(postId);
@@ -379,6 +392,47 @@ function completeRequest(result) {
         serverErrorModal(result.errors); // response.data is an array of objects)
     }
 
+}
+
+function appendPageOfPostsToDealership(pageOfPosts, pageNumber) {
+
+}
+
+
+/**
+ * @name paginatePosts
+ * @param {array} posts 
+ * @param {int} postsPerPage 
+ * @return {object} pages - Object with keys of page1, page2, ..., pagei and values pf the posts 
+ */
+function paginatePosts(posts, postsPerPage) {
+    var pages = {};
+    var totalPosts = posts.length;
+    var pageNumber = 1; 
+    for (var i = 0; i < totalPosts; i += postsPerPage) {
+        // console.log('posts.slice(i, i+postsPerPage)', posts.slice(i, i+postsPerPage));
+        pages[`page${pageNumber}`] = posts.slice(i, i+postsPerPage);
+        pageNumber += 1; // Incrememnt the page number after slicing 
+    }
+    return pages; 
+  }
+
+/**
+ * @name buildPaginationNav
+ * @param {int} numberOfPages 
+ * @description Build the little pagination nav bar thing 
+ * @return {HTML | DOM Nodes} paginationLabel
+ */
+function buildPaginationNav(numberOfPages) {
+    var paginationLabel = $(`<ul>`).addClass('pagination');
+    // Arrays may start at 0, but people expect pages to start at 1
+    for (i = 1; i <= numberOfPages; i++) {
+        var pageNumber = `<li><a href="#">${i}</a></li>`;
+        paginationLabel[0].appendChild(pageNumber);
+    }
+
+    return paginationLabel;
+    
 }
 
 function trimWhiteSpaceAndConvertSpaceToDash(stringWithSpaces) {
@@ -409,6 +463,7 @@ function appendDealershipToGroup(dealershipName, groupName) {
     });
     
     var dealershipHeader = $("<h3>");
+
     dealershipHeader.text(dealershipName);
     dealershipRow[0].appendChild(dealershipHeader[0]);
     $(`#${groupId}`)[0].appendChild(dealershipRow[0]);
@@ -450,6 +505,24 @@ function sortPostsByGroupAndDealership(posts) {
     return sortedPosts;
 }
 
+/**
+ * @name calculateTotalNumberOfPagesPerDealership
+ * @param {int} totalPosts
+ * @param {int} postsPerPage 
+ * @return {int} numberOfPages
+ */
+function calculateTotalNumberOfPagesPerDealership(totalPosts, postsPerPage) {
+    let totalPages = 0;
+    if (totalPosts % postsPerPage === 1) {
+        totalPages = parseInt(totalPosts/postsPerPage) + 1; // Round up to fit the last one on the next page
+    } else {
+        // Total posts is divisible by 3 
+        totalPages = totalPosts/postsPerPage; 
+    }
+
+    return totalPages
+}
+
 
 // Need to structure returned data into:
 // groups = [dealership1, dealership2]
@@ -458,6 +531,8 @@ function sortPostsByGroupAndDealership(posts) {
 
 // Really the idea is that the whole thing should be "threads" with the initial post being the initial post 
 // but it seems kind of silly given the implementation only has one person able to reply 
+
+// appendPostsToPage(dealershipPosts, totalPostsPerPage, totalPages);
 
 function appendPostsToPage(postNodes) {
     for (var i = 0; i < postNodes.length; i++) {
@@ -471,7 +546,7 @@ function appendPostsToPage(postNodes) {
                     var liId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"])
                     postListItem.attr({
                         "id": `${liId}-reply`,
-                        "class": "postItem row"
+                        "class": "list-group-item"
                     });
                     var replyTitle = $("<h4>"); // Create post title
                     replyTitle.addClass("postTitle");
@@ -506,7 +581,7 @@ function appendPostToList(postNode) {
         var ulId = trimWhiteSpaceAndConvertSpaceToDash(postNode["PostId"])
         postSection.attr({
             "id": `${ulId}-ul`,
-            "class": "dealershipSubmissions row"
+            "class": "list-group"
         });
         // Append reply if auth'd
         if (window.MessageBoardApi.authToken.then(function(tokenValue) {
@@ -522,7 +597,8 @@ function appendPostToList(postNode) {
             }    
         }));
         postSection[0].appendChild(post[0]);
-        $(`#${groupId} > #${dealershipId}`)[0].appendChild(postSection[0]);
+        // This part here needs to point to the existing page
+        $(`#${groupId} > #${dealershipId}`)[0].appendChild(postSection[0]); // Append post to the dealership section
     } 
     
     
@@ -532,7 +608,7 @@ function buildPostItem(postNode) {
     var postListItem = $("<li>"); 
     postListItem.attr({
         "id": trimWhiteSpaceAndConvertSpaceToDash(postNode["PostId"]),
-        "class": "postItem row"
+        "class": "list-group-item"
     });
     var postTitle = $("<h4>"); // Create post title
     postTitle.addClass("postTitle");
