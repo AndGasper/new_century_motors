@@ -19,6 +19,7 @@ select {
 .reply {
  border-top: solid grey 1px; 
  border-bottom: solid grey 1px;
+ margin-left: 1em;
 }
 
 .replyLink {
@@ -44,4 +45,8 @@ margin: 0.50em;
 
 .dealershipRow {
   display: inline;
+}
+
+.inactive {
+  display: none
 }

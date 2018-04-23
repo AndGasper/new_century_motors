@@ -368,15 +368,30 @@ function completeRequest(result) {
                 var totalPostsPerPage = 3;
                 var totalPosts = dealershipPosts.length;
                 var totalPages = calculateTotalNumberOfPagesPerDealership(totalPosts, totalPostsPerPage); // The numbner of posts per page is set inside of here
-                var pageSortedPosts = paginatePosts(dealershipPosts, totalPostsPerPage);
-                console.log('pageSortedPosts', pageSortedPosts);
-                // for (k = 0; k < totalPosts; k += totalPostsPerPage) {
-                //     var postsToAppendToPage = dealershipPosts.slice(k, k+totalPostsPerPage); // Only pass in a slice of the total posts per page
-                //     var pageOfPosts = appendPostsToPage(postsToAppendToPage);
-                //     appendPageOfPostsToDealership(pageOfPosts);
-                // }
-                appendPostsToPage(dealershipPosts);
-                buildPaginationNav(totalPages); 
+                var pageSortedPosts = paginatePosts(dealershipPosts, totalPostsPerPage); // {page1: [post, post, post], page2: [post, post]} }
+                var pages = $('<div>').addClass('container');
+                var pageNavBar = $(`<ul>`).addClass('pagination');
+                for (var k = 1; k <= totalPages; k++) {
+                    var pageOfPosts = buildPageOfPosts(pageSortedPosts[`page${k}`]);
+                    var pageId = buildPageId(groups[i], dealerships[j], k); 
+                    var pageContainer = $('<div>').attr({id: pageId});
+                    pageContainer.addClass('pageContainer');
+                    if (k === 1) {
+                        pageContainer.addClass('active'); // Set the initial visibility for the page to active
+                    } else {
+                        pageContainer.addClass('inactive');
+                    }
+                    
+                    var pageNavItem = buildPaginationNavItem(pageId, k);
+                    pageNavBar[0].appendChild(pageNavItem[0]);
+                    pageOfPosts.map(function(item, index) {
+                        pageContainer[0].appendChild(item); 
+                    });
+                    pages[0].appendChild(pageContainer[0]);
+                }
+                pages[0].appendChild(pageNavBar[0]);
+                console.log('pages', pages); 
+                appendPostsToDom(groups[i], dealerships[j], pages);
             }
 
         }
@@ -394,8 +409,86 @@ function completeRequest(result) {
 
 }
 
-function appendPageOfPostsToDealership(pageOfPosts, pageNumber) {
+function appendPostsToDom(groupName, dealershipName, pages) {
+    var groupId = trimWhiteSpaceAndConvertSpaceToDash(groupName);
+    var dealershipId = trimWhiteSpaceAndConvertSpaceToDash(dealershipName); 
+    $(`#${groupId} > #${dealershipId}`)[0].appendChild(pages[0]);
+}
 
+/**
+ * @name buildPageId
+ * @param {string} groupName - The name of the group
+ * @param {string} dealershipName - The name of the dealership
+ * @param {int} pageNumber - The number of the page passed in 
+ * @description - Format the group+dealer+page number so the pages can have unique ids
+ * 
+ * @return {string} pageId
+ */
+function buildPageId(groupName, dealershipName, pageNumber) {
+    var groupId = trimWhiteSpaceAndConvertSpaceToDash(groupName);
+    var dealershipId = trimWhiteSpaceAndConvertSpaceToDash(dealershipName); 
+
+    var pageId = `${groupId}-${dealershipId}-${pageNumber}`;
+
+    return pageId;
+}
+
+/**
+ * @name buildPaginationNavItem
+ * @param {string} pageId - pageId references the page for the dom
+ * @param {int} pageNumber for the text that appears inside of the <li>, e.g. <li>1</li>
+ */
+function buildPaginationNavItem(pageId, pageNumber) {
+    var pageNavItem = $(`<li><a href=${pageId}>${pageNumber}</a></li>`);
+    $(pageNavItem).on('click', function(event) {
+        event.preventDefault();
+        var pageContainerDom = $(event.currentTarget).parent().parent()[0];
+        var currentPage = $(pageContainerDom).find('.active');
+        var currentPageId = $(currentPage).attr('id')
+        goToPage(currentPageId, pageId);
+    });
+
+    return pageNavItem
+}
+
+function goToPage(currentPage, nextPage) {
+    // console.log('goToPage this:', this);
+    // console.log('gotToPage', nextPage);
+    toggleVisibility(currentPage); 
+    toggleVisibility(nextPage);
+}
+
+/**
+ * @name getClasses
+ * @param {string} classNames - string of class names 
+ * @description - takes in a string of class names and splits them at the space
+ * @return {array} of class names
+ */
+function getClasses(classNames) {
+    return classNames.split(' ');
+}
+
+function isActive(classes) {
+    var isActive = false; // Assume the element does not have the class
+    classes.map(function(item) {
+        if (item === 'active') {
+            isActive = true;
+        }
+    });
+    return isActive;
+}
+
+function toggleVisibility(pageId) {
+    var page = $(`#${pageId}`);
+    pageClasses = getClasses($(page).attr('class')); 
+    // If the passed in page was active (active) -> set it to inactive (invisible (odd word))
+    if (isActive(pageClasses)) {
+        page.removeClass('active');
+        page.addClass('inactive');
+    } else {
+        page.removeClass('inactive');
+        page.addClass('active');
+    }   
 }
 
 
@@ -427,8 +520,8 @@ function buildPaginationNav(numberOfPages) {
     var paginationLabel = $(`<ul>`).addClass('pagination');
     // Arrays may start at 0, but people expect pages to start at 1
     for (i = 1; i <= numberOfPages; i++) {
-        var pageNumber = `<li><a href="#">${i}</a></li>`;
-        paginationLabel[0].appendChild(pageNumber);
+        var pageNumber = $(`<li><a href="#">${i}</a></li>`);
+        paginationLabel[0].appendChild(pageNumber[0]);
     }
 
     return paginationLabel;
@@ -523,51 +616,45 @@ function calculateTotalNumberOfPagesPerDealership(totalPosts, postsPerPage) {
     return totalPages
 }
 
-
-// Need to structure returned data into:
-// groups = [dealership1, dealership2]
-// dealership1 = [{PostId, Post, Replies}]
-
-
-// Really the idea is that the whole thing should be "threads" with the initial post being the initial post 
-// but it seems kind of silly given the implementation only has one person able to reply 
-
-// appendPostsToPage(dealershipPosts, totalPostsPerPage, totalPages);
-
-function appendPostsToPage(postNodes) {
+/**
+ * @name buildPageOfPosts
+ * @param {*} postNodes 
+ * @description - Calls appendPostToList which builds the DOM elements for the messages + replies
+ * @return postsList - 
+ */
+function buildPageOfPosts(postNodes) {
+    var postsList = []; 
     for (var i = 0; i < postNodes.length; i++) {
-        var postsList = appendPostToList(postNodes[i]); 
-        if (postNodes[i]["Post"]["replies"].length !== 0) {
-            postNodes[i]["Post"]["replies"].map(function(item, index) {
-                // console.log('index inside of map', index);
-                // Dealing with a bug in my lambda function that inserts the replies twice.
-                if (index % 2 === 0) {
-                    var postListItem = $("<li>"); 
-                    var liId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"])
-                    postListItem.attr({
-                        "id": `${liId}-reply`,
-                        "class": "list-group-item"
-                    });
-                    var replyTitle = $("<h4>"); // Create post title
-                    replyTitle.addClass("postTitle");
-                    replyTitle.text(item.title);
-                    var replyBody = $("<span class='postBody'>");
-                    var replyBodyText = $("<p>").text(item.body);
-                    replyBody[0].appendChild(replyBodyText[0]);
-                    postListItem[0].appendChild(replyTitle[0]); // <li><h3></h3><span><p></p></span></li>
-                    postListItem[0].appendChild(replyBody[0]);
-                    // console.log('postListItem', postListItem);
-                    var originalPostId = trimWhiteSpaceAndConvertSpaceToDash(postNodes[i]["PostId"]);
-                    var opSection = document.getElementById(originalPostId);
-                    opSection.appendChild(postListItem[0]);
-                    // console.log('opSection', opSection);
-                    opSection.appendChild(postListItem[0]); 
-                }
-                
-            });
-            
-        }
+        // var postsList = appendPostToList(postNodes[i]); // This is where the post was getting appended to the DOM
+        postsList.push(appendPostToList(postNodes[i])); 
     }
+    console.log('postsList', postsList);
+    return postsList;
+}
+
+/**
+ * 
+ * @param {object | PostId (string), Post (array) } replyNode 
+ * @param {int} index 
+ * @param {object | PostId (string), Post (array) } postNode 
+ */
+function buildReplyItem(replyNode, index) { 
+    var postListItem = $("<li>"); 
+    var liId = trimWhiteSpaceAndConvertSpaceToDash(replyNode.originalPost);
+    postListItem.attr({
+        "id": `${liId}-reply`,
+        "class": "list-group-item reply"
+    });
+    var replyTitle = $("<h4>"); // Create post title
+    replyTitle.addClass("postTitle");
+    replyTitle.text(replyNode.title);
+    var replyBody = $("<span class='postBody'>");
+    var replyBodyText = $("<p>").text(replyNode.body);
+    replyBody[0].appendChild(replyBodyText[0]);
+    postListItem[0].appendChild(replyTitle[0]); // <li><h3></h3><span><p></p></span></li>
+    postListItem[0].appendChild(replyBody[0]);
+    
+    return postListItem[0];
 }
 
 function appendPostToList(postNode) {
@@ -597,11 +684,20 @@ function appendPostToList(postNode) {
             }    
         }));
         postSection[0].appendChild(post[0]);
+
+        if (postNode["Post"]["replies"].length !== 0) {
+            postNode["Post"]["replies"].map(function(item, index) {
+                if (index % 2 === 0) {
+                    var replyItem = buildReplyItem(item, index);
+                    postSection[0].appendChild(replyItem);
+                }
+            });
+        }
         // This part here needs to point to the existing page
-        $(`#${groupId} > #${dealershipId}`)[0].appendChild(postSection[0]); // Append post to the dealership section
+        // $(`#${groupId} > #${dealershipId}`)[0].appendChild(postSection[0]); // Append post to the dealership section
     } 
-    
-    
+
+    return postSection[0];
 }
 
 function buildPostItem(postNode) {
