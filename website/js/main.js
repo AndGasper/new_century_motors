@@ -356,7 +356,7 @@ function completeRequest(result) {
     if (result.data) {
         $('.posts-list-container').children().remove();
         var sortedPosts = sortPostsByGroupAndDealership(result.data); // Pull the unique groups from the messages
-        // console.log("sortedPosts", sortedPosts);
+        console.log("sortedPosts", sortedPosts);
         var groups = Object.keys(sortedPosts);
         for (var i = 0; i < groups.length; i++) {
             appendGroupToPage(groups[i]);
@@ -369,6 +369,8 @@ function completeRequest(result) {
                 var totalPosts = dealershipPosts.length;
                 var totalPages = calculateTotalNumberOfPagesPerDealership(totalPosts, totalPostsPerPage); // The numbner of posts per page is set inside of here
                 var pageSortedPosts = paginatePosts(dealershipPosts, totalPostsPerPage); // {page1: [post, post, post], page2: [post, post]} }
+                console.log(`groups[i], dealerships[j]: ${groups[i]} ${dealerships[j]}`);
+                console.log('pageSortedPosts', pageSortedPosts);
                 var pages = $('<div>').addClass('container');
                 var pageNavBar = $(`<ul>`).addClass('pagination');
                 for (var k = 1; k <= totalPages; k++) {
@@ -390,7 +392,7 @@ function completeRequest(result) {
                     pages[0].appendChild(pageContainer[0]);
                 }
                 pages[0].appendChild(pageNavBar[0]);
-                console.log('pages', pages); 
+                // console.log('pages', pages); 
                 appendPostsToDom(groups[i], dealerships[j], pages);
             }
 
@@ -628,7 +630,7 @@ function buildPageOfPosts(postNodes) {
         // var postsList = appendPostToList(postNodes[i]); // This is where the post was getting appended to the DOM
         postsList.push(appendPostToList(postNodes[i])); 
     }
-    console.log('postsList', postsList);
+    // console.log('postsList', postsList);
     return postsList;
 }
 

@@ -50,3 +50,8 @@ margin: 0.50em;
 .inactive {
   display: none
 }
+
+.postBody {
+  text-align: left;
+  margin: 1em;
+}
