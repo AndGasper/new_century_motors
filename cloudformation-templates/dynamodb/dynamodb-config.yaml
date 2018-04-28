@@ -1,65 +1,43 @@
-ForumTable: 
-  Type: AWS::DynamoDB::Table
-  Properties:
-    TableName: Forum
-    AttributeDefinitions:
-    -
-      AttributeName: Name
-      AttributeType: S
-    -
-      AttributeName: Group
-      AttributeType: S
-    KeySchema:
-    -
-      AttributeName: Name
-      KeyType: HASH
-    -
-      AttributeName: Group
-      KeyType: RANGE
-    ProvisionedThroughput:
-      ReadCapacityUnits: 5
-      WriteCapacityUnits: 5
-
-ThreadTable:
-  Type: AWS::DynamoDB::Table
-  Properties:
-    TableName: Thread
-    AttributeDefinitions:
-    -
-      AttributeName: ForumName
-      AttributeType: S
-    - 
-      AttributeName: Subject
-      AttributeType: S
-    KeySchema:
-    -
-      AttributeName: ForumName
-      KeyType: HASH
-    -
-      AttributeName: Subject
-      KeyType: RANGE
-    ProvisionedThroughput:
-      ReadCapacityUnits: 5
-      WriteCapacityUnits: 5
-
-ReplyTable:
-  Type: AWS::DynamoDB::Table
-  Properties:
-    TableName: Reply
-    AttributeDefinitions:
-    -
-      AttributeName: Id
-      AttributeType: S
-    -
-      AttributeName: Subject
-      AttributeType: S
-    KeySchema:
-    -
-      AttributeName: Id
-      KeyType: HASH
-    -
-      AttributeName: Subject
-      KeyType: RANGE
-    ProvisionedThroughput:
-      ReadCapacityUnits: 5
-      WriteCapacityUnits: 5
+---
+AWSTemplateFormatVersion: 2010-09-09
+# Group > Dealership > Posts
+# Posts: PostId, 
+Resources: 
+  ForumTable: 
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ForumCF
+      AttributeDefinitions:
+      -
+        AttributeName: Group
+        AttributeType: S
+      -
+        AttributeName: Dealership
+        AttributeType: S
+      -
+        AttributeName: PostId
+        AttributeType: S
+      KeySchema:
+      -
+        AttributeName: Group
+        KeyType: HASH
+      -
+        AttributeName: Dealership
+        KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      GlobalSecondaryIndexes:
+      - IndexName: 'PostId-Dealership'
+        KeySchema:
+        -
+          AttributeName: PostId
+          KeyType: HASH
+        -
+          AttributeName: Dealership
+          KeyType: RANGE
+        Projection: 
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
