@@ -68,7 +68,7 @@
                     - dynamodb:PutItem
                     - dynamodb:Scan
                     - dynamodb:UpdateItem
-                  Resource: !GetAtt ThreadTable.Arn
+                  Resource: !GetAtt ForumTable.Arn
                 -
                   Sid: EmailNotificationStatement
                   Effect: Allow
@@ -104,7 +104,8 @@
                   Action: 
                     - dynamodb:GetItem
                     - dynamodb:Scan
-                  Resource: !GetAtt ThreadTable.Arn
+                    - dynamodb:Query
+                  Resource: !GetAtt ForumTable.Arn
   
     CloudWatchRole: 
       Type: "AWS::IAM::Role"
@@ -257,7 +258,7 @@
         MemorySize: 128
         Handler: getPosts.handler
         Code:
-          S3Bucket: "messageboard-lambda-functions"
+          S3Bucket: "messageboard-paginate-lambda-functions"
           S3Key: "getPosts.zip"
     
     CreatePostFunction:
@@ -270,14 +271,14 @@
         MemorySize: 128
         Handler: createPost.handler
         Code:
-          S3Bucket: "messageboard-lambda-functions"
+          S3Bucket: "messageboard-paginate-lambda-functions"
           S3Key: "createPost.zip"
           
   
     MessageBoardApi:
       Type: AWS::ApiGateway::RestApi
       Properties:
-        Name: MessageBoardApi
+        Name: MessageBoardApiPaginated
         Body:
           swagger: 2.0
           info:

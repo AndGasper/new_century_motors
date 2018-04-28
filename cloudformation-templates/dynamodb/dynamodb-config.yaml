@@ -1,43 +1,38 @@
----
-AWSTemplateFormatVersion: 2010-09-09
-# Group > Dealership > Posts
-# Posts: PostId, 
-Resources: 
-  ForumTable: 
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: ForumCF
-      AttributeDefinitions:
-      -
-        AttributeName: Group
-        AttributeType: S
-      -
-        AttributeName: Dealership
-        AttributeType: S
-      -
-        AttributeName: PostId
-        AttributeType: S
+ForumTable: 
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: ForumCF
+    AttributeDefinitions:
+    -
+      AttributeName: Group
+      AttributeType: S
+    -
+      AttributeName: Dealership
+      AttributeType: S
+    -
+      AttributeName: PostId
+      AttributeType: S
+    KeySchema:
+    -
+      AttributeName: Group
+      KeyType: HASH
+    -
+      AttributeName: Dealership
+      KeyType: RANGE
+    ProvisionedThroughput:
+      ReadCapacityUnits: 5
+      WriteCapacityUnits: 5
+    GlobalSecondaryIndexes:
+    - IndexName: 'PostId-Dealership'
       KeySchema:
       -
-        AttributeName: Group
+        AttributeName: PostId
         KeyType: HASH
       -
         AttributeName: Dealership
         KeyType: RANGE
+      Projection: 
+        ProjectionType: ALL
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
-      GlobalSecondaryIndexes:
-      - IndexName: 'PostId-Dealership'
-        KeySchema:
-        -
-          AttributeName: PostId
-          KeyType: HASH
-        -
-          AttributeName: Dealership
-          KeyType: RANGE
-        Projection: 
-          ProjectionType: ALL
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5

@@ -154,11 +154,13 @@ exports.handler = (event, context, callback) => {
   
         function recordPost(postId, post, timeStamp) {
             return ddb.put({
-                TableName: 'Posts',
+                TableName: 'ForumCF',
                 Item: {
                     PostId: postId,
                     Post: post,
                     PostTime: timeStamp,
+                    Group: post.group,
+                    Dealership: post.dealership,
                 },
             }).promise();
         }

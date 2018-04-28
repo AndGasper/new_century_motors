@@ -43,6 +43,26 @@ function getPost(postId) {
       "PostId": postId
     }
   };
+  function getLimitedPostsForGroupName(groupName, dealershipName, offset = 0) {
+    const POSTS_QUERY_LIMIT = 3;
+    const getLimitedPostParams = { 
+      TableName: 'ForumCF',
+      Key: {
+        'Group': groupName,
+        'Dealership': dealershipName
+      },
+      Limit: POSTS_QUERY_LIMIT,
+      ReturnConsumedCapacity: TOTAL
+    };
+    // use last evaluated key to advance the limit
+    ddb.query(params, function(error, data) {
+      if (error) {
+        console.log('error', error);
+      } else {
+        console.log('data returned by query', data);
+      }
+    })
+  }
   return ddb.get(getPostParams, function(error, data) {
     if (error) {
       console.log('error on getItem', error);
