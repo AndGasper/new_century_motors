@@ -4,17 +4,17 @@ ForumTable:
     TableName: ForumCF
     AttributeDefinitions:
     -
-      AttributeName: Group
+      AttributeName: PostId
       AttributeType: S
     -
       AttributeName: Dealership
       AttributeType: S
     -
-      AttributeName: PostId
+      AttributeName: Group
       AttributeType: S
     KeySchema:
     -
-      AttributeName: Group
+      AttributeName: PostId
       KeyType: HASH
     -
       AttributeName: Dealership
@@ -23,13 +23,13 @@ ForumTable:
       ReadCapacityUnits: 5
       WriteCapacityUnits: 5
     GlobalSecondaryIndexes:
-    - IndexName: 'PostId-Dealership'
+    - IndexName: 'PostId-Group'
       KeySchema:
       -
         AttributeName: PostId
         KeyType: HASH
       -
-        AttributeName: Dealership
+        AttributeName: Group
         KeyType: RANGE
       Projection: 
         ProjectionType: ALL

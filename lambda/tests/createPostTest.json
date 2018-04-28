@@ -29,6 +29,25 @@
       }
     },
     "body": "{\"message\":{\"submissionTitle\":\"Testtitle\",\"submissionBody\":\"Test body\",\"dealership\": \"Dealership 1\",\"group\": \"Group A\"}}"
+  },
+  {
+    "path": "/post",
+    "httpMethod": "POST",
+    "headers": {
+      "Accept": "*/*",
+      "Authorization": "{key}",
+      "content-type": "application/json; charset=UTF-8"
+    },
+    "queryStringParameters": null,
+    "pathParameters": null,
+    "requestContext": {
+      "authorizer": {
+        "claims": {
+          "cognito:username": "{username}"
+        }
+      }
+    },
+    "body": "{\"submissionTitle\":\"Testtitle\",\"submissionBody\":\"Test body\",\"dealership\": \"Dealership 1\",\"group\": \"Group A\"}"
   }
 
   \"dealership\": \"Dealership 1\",\"group\": \"Group A\"
